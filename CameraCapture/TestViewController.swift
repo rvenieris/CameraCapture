@@ -11,9 +11,18 @@ class TestViewController: UIViewController {
     
     
     var referenceImage: CIImage?
+    /// UI that represents the reference line for the image capture
     let referenceLine = UIView()
+    /// UI of a small visualization of the reference line for image capturing. Useful for after first capture.
+    let referenceLineMiniMap = UIView()
+    /// UI that controls what angle of capture
     let rotationSlider = UISlider()
     let captureButton = UIButton(type: .system)
+    var referenceImageView: UIImageView!
+    /// UI of a small visualization of the reference image. Useful for after first capture.
+    let miniMap = UIImageView()
+    /// UI that stores the result of the captured line image
+    var captureImageView: UIImageView? = nil
     
     /// <#Description#>
     /// - Parameter animated: True of false
@@ -28,31 +37,62 @@ class TestViewController: UIViewController {
         
         referenceImage = ciImage
         
-        let image = UIImage(ciImage: ciImage)
+        createReferenceImageView()
         
-        let imageView = newImageView()
-        
-        view.addSubview(imageView)
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            imageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            imageView.topAnchor.constraint(equalTo: view.topAnchor),
-            imageView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            imageView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
-            
-        ])
-        imageView.image = image
-        
-        
-        createCaptureLine()
+        createCaptureLine(line: referenceLine, parent: view)
         
         createCaptureButton()
         
         createRotationSlider()
+        
+        createImageMiniMap()
     }
     
     // MARK: - UI Views
     
+    private func createReferenceImageView() {
+        
+        guard let referenceImage else {return}
+        
+        let image = UIImage(ciImage: referenceImage)
+        
+        referenceImageView = newImageView()
+        
+        view.addSubview(referenceImageView)
+        referenceImageView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            referenceImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            referenceImageView.topAnchor.constraint(equalTo: view.topAnchor),
+            referenceImageView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            referenceImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+            
+        ])
+        referenceImageView.image = image
+    }
+    
+    private func createImageMiniMap() {
+        
+        guard let referenceImage else {return}
+        
+        miniMap.translatesAutoresizingMaskIntoConstraints = false
+        miniMap.contentMode = .scaleAspectFit
+        view.addSubview(miniMap)
+        miniMap.layer.borderWidth = 1
+        miniMap.layer.borderColor = UIColor.white.cgColor
+        let ratio = referenceImage.extent.width / referenceImage.extent.height
+        let miniMapHeight: CGFloat = 120
+        NSLayoutConstraint.activate([
+            miniMap.heightAnchor.constraint(equalToConstant: miniMapHeight),
+            miniMap.widthAnchor.constraint(equalToConstant: miniMapHeight * ratio),
+            miniMap.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            miniMap.topAnchor.constraint(equalTo: view.topAnchor, constant: 20)
+        ])
+        
+        let image = UIImage(ciImage: referenceImage)
+        miniMap.image = image
+        
+        createCaptureLine(line: referenceLineMiniMap, parent: miniMap, lineHeight: 0.8)
+    }
     
     private func newImageView(height:CGFloat? = nil) -> UIImageView {
         let imageView = UIImageView(frame: CGRect(x: 0, y: 0,
@@ -93,26 +133,26 @@ class TestViewController: UIViewController {
     }
     
     
-    private func createCaptureLine() {
+    private func createCaptureLine(line: UIView, parent: UIView, lineHeight: CGFloat = 1.5) {
         
-        referenceLine.backgroundColor = .white
-        
-        let lineHeight: CGFloat = 1.5
-        referenceLine.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(referenceLine)
+        line.backgroundColor = .white
+    
+        line.translatesAutoresizingMaskIntoConstraints = false
+        parent.addSubview(line)
         
         NSLayoutConstraint.activate([
-            referenceLine.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            referenceLine.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            referenceLine.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 1),
-            referenceLine.heightAnchor.constraint(equalToConstant: lineHeight)
+            line.centerXAnchor.constraint(equalTo: parent.centerXAnchor),
+            line.centerYAnchor.constraint(equalTo: parent.centerYAnchor),
+            line.widthAnchor.constraint(equalTo: parent.widthAnchor, multiplier: 1.5),
+            line.heightAnchor.constraint(equalToConstant: lineHeight)
         ])
+        parent.clipsToBounds = true
     }
     
     
     private func createRotationSlider() {
         rotationSlider.minimumValue = 0
-        rotationSlider.maximumValue = 360
+        rotationSlider.maximumValue = 180
         rotationSlider.value = 0 // Start with no rotation
         rotationSlider.translatesAutoresizingMaskIntoConstraints = false
         rotationSlider.addTarget(self, action: #selector(rotateLine), for: .valueChanged)
@@ -130,23 +170,51 @@ class TestViewController: UIViewController {
     @objc func rotateLine() {
         let angle = CGFloat(rotationSlider.value) * .pi / 180 // Convert degrees to radians
         referenceLine.transform = CGAffineTransform(rotationAngle: angle)
+        referenceLineMiniMap.transform = CGAffineTransform(rotationAngle: angle)
     }
+    
+    
+    func rotateAndPreserveSize(_ image: CIImage, by radians: CGFloat, originalSize: CGFloat = 4032) -> CIImage {
+        // Calculate the diagonal length to ensure the rotated image fits within the original size
+        let diagonal = sqrt(pow(originalSize, 2) + pow(originalSize, 2))
+        let scale = originalSize / diagonal
+
+        // Create a rotation transform
+        let rotation = CGAffineTransform(rotationAngle: radians)
+        
+        // Create a scaling transform
+        let scaling = CGAffineTransform(scaleX: scale, y: scale)
+        
+        // Combine transforms: scale first, then rotate
+        let combinedTransform = scaling.concatenating(rotation)
+
+        // Apply the transform to the CIImage
+        return image.transformed(by: combinedTransform)
+    }
+    
     
     @objc func captureFrequency() {
         
         guard let referenceImage else { return }
         
-        let colors = referenceImage.centralLineColors()
-        let wallSize = view.bounds.height/2.0
+        let angle = CGFloat(rotationSlider.value) * .pi / 180
+        let capturedImage = rotateAndPreserveSize(referenceImage, by: angle, originalSize: referenceImage.extent.width)
+        
+        referenceImageView.transform = CGAffineTransform(rotationAngle: -angle)
+        print(referenceImage.extent.width)
+        let colors = capturedImage.centralLineColors()
+        let wallSize = view.bounds.height
         let colorWall = colors.uiImageWall(height: wallSize)
         
         let maxColors = colors.filter {$0.red == 1 || $0.green == 1 || $0.blue == 1 }
         print("Cores: \(maxColors.count)")
         maxColors.forEach {print($0.red, $0.green, $0.blue)}
         
-        let imageView3 = newImageView(height: wallSize)
-        imageView3.image = colorWall
-        view.addSubview(imageView3)
+        captureImageView?.removeFromSuperview()
+        
+        captureImageView = newImageView(height: wallSize)
+        captureImageView?.image = colorWall
+        view.insertSubview(captureImageView!, aboveSubview: referenceImageView)
     }
 }
 
