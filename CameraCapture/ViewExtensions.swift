@@ -111,6 +111,29 @@ extension CIColor {
         let blue  = lhs.blue  / rhs.blue
         return CIColor(red: red, green: green, blue: blue, alpha: 1)
     }
+    
+    
+    func rgbToXYZ() -> (x: CGFloat, y: CGFloat, z: CGFloat) {
+        // Step 1: Normalize RGB values to the range [0, 1]
+        let color = self
+        let r = color.red // / 255.0
+        let g = color.green //  / 255.0
+        let b = color.blue //  / 255.0
+
+        // Step 2: Apply gamma correction (sRGB standard)
+        let rLinear = r > 0.04045 ? pow((r + 0.055) / 1.055, 2.4) : r / 12.92
+        let gLinear = g > 0.04045 ? pow((g + 0.055) / 1.055, 2.4) : g / 12.92
+        let bLinear = b > 0.04045 ? pow((b + 0.055) / 1.055, 2.4) : b / 12.92
+
+        // Step 3: Apply the RGB to XYZ transformation matrix
+        let x = rLinear * 0.4124564 + gLinear * 0.3575761 + bLinear * 0.1804375
+        let y = rLinear * 0.2126729 + gLinear * 0.7151522 + bLinear * 0.0721750
+        let z = rLinear * 0.0193339 + gLinear * 0.1191920 + bLinear * 0.9503041
+
+        // Step 4: Return the XYZ values
+        return (x: x, y: y, z: z)
+    }
+
 }
 
 extension [CIColor] {

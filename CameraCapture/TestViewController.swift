@@ -24,6 +24,8 @@ class TestViewController: UIViewController {
     /// UI that stores the result of the captured line image
     var captureImageView: UIImageView? = nil
     
+    let exportButton = UIButton(type: .system)
+    
     /// <#Description#>
     /// - Parameter animated: True of false
     override func viewDidAppear(_ animated: Bool) {
@@ -43,9 +45,12 @@ class TestViewController: UIViewController {
         
         createCaptureButton()
         
+        createExportButton()
+        
         createRotationSlider()
         
         createImageMiniMap()
+        
     }
     
     // MARK: - UI Views
@@ -132,6 +137,28 @@ class TestViewController: UIViewController {
         captureButton.addTarget(self, action: #selector(captureFrequency), for: .touchUpInside)
     }
     
+    private func createExportButton() {
+        exportButton.setTitle("Exportar", for: .normal)
+        exportButton.setTitleColor(.white, for: .normal)
+        exportButton.backgroundColor = .systemBlue
+        exportButton.layer.cornerRadius = 10
+        exportButton.translatesAutoresizingMaskIntoConstraints = false
+        
+        view.addSubview(exportButton)
+        
+        NSLayoutConstraint.activate([
+            exportButton.trailingAnchor.constraint(equalTo: captureButton.trailingAnchor),
+            exportButton.bottomAnchor.constraint(equalTo: captureButton.topAnchor, constant: -20),
+            exportButton.widthAnchor.constraint(equalToConstant: 100),
+            exportButton.heightAnchor.constraint(equalToConstant: 50)
+        ])
+        
+        exportButton.addTarget(self, action: #selector(exportToFrequency), for: .touchUpInside)
+        
+        exportButton.isEnabled = false
+        exportButton.alpha = 0.3
+    }
+    
     
     private func createCaptureLine(line: UIView, parent: UIView, lineHeight: CGFloat = 1.5) {
         
@@ -192,10 +219,12 @@ class TestViewController: UIViewController {
         return image.transformed(by: combinedTransform)
     }
     
-    
+    var capturedColors: [CIColor]? = nil
     @objc func captureFrequency() {
         
         guard let referenceImage else { return }
+        exportButton.isEnabled = true
+        exportButton.alpha = 1.0
         
         let angle = CGFloat(rotationSlider.value) * .pi / 180
         let capturedImage = rotateAndPreserveSize(referenceImage, by: angle, originalSize: referenceImage.extent.width)
@@ -203,6 +232,8 @@ class TestViewController: UIViewController {
         referenceImageView.transform = CGAffineTransform(rotationAngle: -angle)
         print(referenceImage.extent.width)
         let colors = capturedImage.centralLineColors()
+        self.capturedColors = colors
+        
         let wallSize = view.bounds.height
         let colorWall = colors.uiImageWall(height: wallSize)
         
@@ -215,6 +246,15 @@ class TestViewController: UIViewController {
         captureImageView = newImageView(height: wallSize)
         captureImageView?.image = colorWall
         view.insertSubview(captureImageView!, aboveSubview: referenceImageView)
+    }
+    
+    
+    @objc func exportToFrequency() {
+        guard let capturedColors else { return }
+        
+        let xyzColors = capturedColors.map({$0.rgbToXYZ()})
+        print(xyzColors)
+        
     }
 }
 

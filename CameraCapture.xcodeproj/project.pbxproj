@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		42A2363F2CF67D9E0093A1EA /* ColorList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42A2363E2CF67D970093A1EA /* ColorList.swift */; };
 		BB9F877B2CAADC78001773CC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB9F877A2CAADC78001773CC /* AppDelegate.swift */; };
 		BB9F877D2CAADC78001773CC /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB9F877C2CAADC78001773CC /* SceneDelegate.swift */; };
 		BB9F877F2CAADC78001773CC /* VideoStreamViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB9F877E2CAADC78001773CC /* VideoStreamViewController.swift */; };
@@ -42,6 +43,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		42A2363E2CF67D970093A1EA /* ColorList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorList.swift; sourceTree = "<group>"; };
 		BB9F87772CAADC78001773CC /* CameraCapture.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CameraCapture.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB9F877A2CAADC78001773CC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		BB9F877C2CAADC78001773CC /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -111,6 +113,7 @@
 		BB9F87792CAADC78001773CC /* CameraCapture */ = {
 			isa = PBXGroup;
 			children = (
+				42A2363E2CF67D970093A1EA /* ColorList.swift */,
 				BB9F877A2CAADC78001773CC /* AppDelegate.swift */,
 				BB9F877C2CAADC78001773CC /* SceneDelegate.swift */,
 				BB9F877E2CAADC78001773CC /* VideoStreamViewController.swift */,
@@ -288,6 +291,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BB9F87AD2CAB1952001773CC /* ViewController.swift in Sources */,
+				42A2363F2CF67D9E0093A1EA /* ColorList.swift in Sources */,
 				BB9F877F2CAADC78001773CC /* VideoStreamViewController.swift in Sources */,
 				BB9F877B2CAADC78001773CC /* AppDelegate.swift in Sources */,
 				BBD7F0792CE7EDB700FF0778 /* ViewExtensions.swift in Sources */,
