@@ -78,7 +78,7 @@ extension CIImage {
         ciContext.render(ciImage, toBitmap: bitmapData, rowBytes: bytesPerRow, bounds: roi, format: bitmapFormat, colorSpace: colorSpace)
         
         // Acessar os dados dos pixels.
-        let pixelBuffer = bitmapData.bindMemory(to: UInt8.self, capacity: 4)
+        let pixelBuffer = bitmapData.bindMemory(to: UInt8.self, capacity: 1) // 4
         
         // Iterar sobre cada pixel na ROI e extrair os componentes de cor.
         for x in 0..<Int(roi.width) {
