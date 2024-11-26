@@ -17,7 +17,7 @@ class ViewController: UIViewController {
     var displayLayer: AVSampleBufferDisplayLayer!
 
     var isImageFrozen = false // Para controlar o estado de congelamento da imagem
-
+    var histogramChannel:HistogramChannel = .all
     var currentCameraIndex = 0
     var availableVideoDevices: [AVCaptureDevice] = []
     
@@ -73,6 +73,16 @@ class ViewController: UIViewController {
         return captureButton
     }()
 
+    lazy var channelButton:UIButton = {
+        let button = UIButton(type: .system)
+        button.frame = CGRect(x: ((view.frame.width - 60)/2) - 100, y: view.frame.height - 100, width: 60, height: 60)
+        button.layer.cornerRadius = 30
+        button.backgroundColor = UIColor.gray
+        button.setTitleColor(.white, for: .normal)
+        button.setTitleColor(.blue, for: .selected)
+        button.addTarget(self, action: #selector(changeChannel), for: .touchUpInside)
+        return button
+    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -81,6 +91,7 @@ class ViewController: UIViewController {
         setupDisplayLayer()
         
         view.addSubview(captureButton)
+        view.addSubview(channelButton)
         view.addSubview(switchButton)
         if currentCamera.hasTorch { view.addSubview(torchButton) }
     }
@@ -91,7 +102,7 @@ class ViewController: UIViewController {
 
         // Listar dispositivos de vídeo disponíveis
         availableVideoDevices = AVCaptureDevice.DiscoverySession(
-            deviceTypes: [.builtInWideAngleCamera, .builtInUltraWideCamera, .builtInTelephotoCamera],
+            deviceTypes: .allCameras, //[.builtInWideAngleCamera, .builtInUltraWideCamera, .builtInTelephotoCamera, .],
             mediaType: .video,
             position: .back
         ).devices
@@ -193,13 +204,26 @@ class ViewController: UIViewController {
         captureButton.isSelected = isImageFrozen
     }
 
+    @objc func changeChannel() {
+        histogramChannel = histogramChannel.next
+        switch histogramChannel {
+        case .red:
+            channelButton.backgroundColor = .red
+        case .green:
+            channelButton.backgroundColor = .green
+        case .blue:
+            channelButton.backgroundColor = .blue
+        case .all:
+            channelButton.backgroundColor = .gray
+        }
+    }
+
     @objc func switchCameraButtonPressed() {
         // Alternar para a próxima câmera
         currentCameraIndex = (currentCameraIndex + 1) % availableVideoDevices.count
 
         // Reconfigurar o dispositivo de entrada
         configureInputDevice()
-        print(currentCamera.localizedName)
         switchButton.setTitle(currentCamera.localizedName, for: .normal)
     }
     
@@ -213,6 +237,13 @@ class ViewController: UIViewController {
         currentCamera.unlockForConfiguration()
         torchButton.isSelected.toggle()
     }
+    
+    func drawHorizontalLine(in context: CGContext, at y: CGFloat) {
+        let lineWidth: CGFloat = 1.0
+//        let lineColor: CGColor = UIColor.black.cgColor
+        context.setLineDash(phase: 0.0, lengths: [lineWidth])
+                                                  context.setLineDash(phase: 0.0, lengths: [lineWidth])
+                                                  }
 
 }
 
@@ -226,10 +257,9 @@ extension ViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
 //        connection.videoOrientation = .portrait
 //        connection.videoRotationAngle = .pi / 2
         
-        if !isImageFrozen {
+        guard !isImageFrozen else { return }
             // Enfileirar o sampleBuffer para exibição
-            displayLayer.sampleBufferRenderer.enqueue(sampleBuffer)
-        }
+        displayLayer.sampleBufferRenderer.enqueue(sampleBuffer)
     }
 }
 
@@ -239,7 +269,7 @@ extension ViewController: AVCapturePhotoCaptureDelegate {
                      didFinishProcessingPhoto photo: AVCapturePhoto,
                      error: Error?) {
 
-        if let error = error {
+        if let error {
             print("Erro ao capturar foto: \(error)")
             return
         }
@@ -252,11 +282,11 @@ extension ViewController: AVCapturePhotoCaptureDelegate {
         // Salvar a foto em DNG no rolo da câmera
         saveDNGToCameraRoll(dngData)
 
-        // Obter a imagem processada (JPEG) para gerar o histograma
+        // Obter a imagem processada para gerar o histograma
         if let cgImage = photo.cgImageRepresentation() {
             let uiImage = UIImage(cgImage: cgImage)
             DispatchQueue.main.async {
-                self.showHistogram(for: uiImage)
+                self.showHistogram(for: uiImage, channel: self.histogramChannel)
             }
         }
     }
@@ -272,7 +302,7 @@ extension ViewController: AVCapturePhotoCaptureDelegate {
                         let request = PHAssetCreationRequest.forAsset()
                         request.addResource(with: .photo, fileURL: tempURL, options: nil)
                     }) { success, error in
-                        if let error = error {
+                        if let error {
                             print("Erro ao salvar a foto: \(error)")
                         } else {
                             print("Foto salva com sucesso!")
@@ -288,7 +318,6 @@ extension ViewController: AVCapturePhotoCaptureDelegate {
     }
 }
 
-
 extension OSType {
     var rawFormatName:String {
         switch self {
@@ -300,24 +329,45 @@ extension OSType {
 }
 
 
-extension ViewController {
+enum HistogramChannel:Int, CaseIterable {
+    case red, green, blue, all
+    var haveRed:Bool { return self == .red || self == .all }
+    var haveGreen:Bool { return self == .green || self == .all }
+    var haveBlue:Bool { return self == .blue || self == .all }
+    var redIndex:Double { return haveRed ? 0.299 : 0 }
+    var greenIndex:Double { return haveGreen ? 0.587 : 0 }
+    var blueIndex:Double { return haveBlue ? 0.114 : 0 }
+    var next:HistogramChannel { return HistogramChannel(rawValue: rawValue + 1) ?? .red }
+}
 
-    func showHistogram(for image: UIImage) {
+
+extension ViewController {
+    
+
+
+
+    
+     
+    
+
+    func showHistogram(for image: UIImage, channel:HistogramChannel = .all) {
         // Calcular o histograma
-        if let histogramData = calculateHistogram(for: image) {
+        if let histogramData = calculateHistogram(for: image, channel: channel) {
             // Exibir o histograma
             let histogramView = HistogramView(frame: CGRect(x: 20, y: 100, width: view.frame.width - 40, height: 200))
             histogramView.histogramData = histogramData
-            histogramView.backgroundColor = UIColor.black.withAlphaComponent(0.7)
+            histogramView.setColor(for: channel)
+            histogramView.backgroundColor = UIColor.black.withAlphaComponent(0.5)
             view.addSubview(histogramView)
         }
     }
 
-    func calculateHistogram(for image: UIImage) -> [Int]? {
+    func calculateHistogram(for image: UIImage, channel:HistogramChannel = .all, resolution: UInt = 256) -> [Int]? {
         
         // Redimensionar a imagem para reduzir o número de pixels
-        guard let resizedImage = image.resize(to: CGSize(width: 256, height: 256)) else { return nil }
-        guard let cgImage = resizedImage.cgImage else { return nil }
+        guard let resizedImage = image.resize(to: CGSize(square: CGFloat(resolution))),
+              let cgImage = resizedImage.cgImage else { return nil }
+        
 //        guard let cgImage = image.cgImage else { return nil }
 
         // Criar bitmap context
@@ -360,7 +410,7 @@ extension ViewController {
                 let blue = pixelBuffer[pixelIndex + 2]
 
                 // Converter para luminância (escala de cinza)
-                let luminance = 0.299 * Double(red) + 0.587 * Double(green) + 0.114 * Double(blue)
+                let luminance = channel.redIndex * Double(red) + channel.greenIndex * Double(green) + channel.blueIndex * Double(blue)
                 let index = min(255, max(0, Int(luminance)))
                 histogram[index] += 1
             }
@@ -374,8 +424,11 @@ extension ViewController {
 class HistogramView: UIView {
 
     var histogramData: [Int] = []
+    var color: UIColor = .white
 
     override func draw(_ rect: CGRect) {
+        addTapGesture()
+
         guard !histogramData.isEmpty else { return }
 
         let maxCount = histogramData.max() ?? 1
@@ -391,8 +444,27 @@ class HistogramView: UIView {
             path.append(UIBezierPath(rect: barRect))
         }
 
-        UIColor.white.setFill()
+        color.setFill()
         path.fill()
+    }
+    
+    func addTapGesture() {
+        self.isUserInteractionEnabled = true
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(removeFromSuperview))
+        self.addGestureRecognizer(tapGesture)
+    }
+    
+    func setColor(for channel:HistogramChannel) {
+        switch channel {
+        case .red:
+            color = .red
+        case .green:
+            color = .green
+        case .blue:
+            color = .blue
+        case .all:
+            color = .white
+        }
     }
 }
 
@@ -407,3 +479,37 @@ extension UIImage {
         return resized
     }
 }
+
+
+extension CGSize {
+    init (square: CGFloat) {
+        self.init(width: square, height: square)
+    }
+}
+
+
+extension Array where Element == AVCaptureDevice.DeviceType {
+    public static var allCameras: [AVCaptureDevice.DeviceType] {
+        [
+            .builtInWideAngleCamera ,
+            .builtInUltraWideCamera ,
+            .builtInTelephotoCamera ,
+            .builtInDualCamera      ,
+            .builtInDualWideCamera  ,
+            .builtInTripleCamera    ,
+            .continuityCamera       ,
+            .builtInLiDARDepthCamera,
+            .builtInTrueDepthCamera ,
+            .external
+        ]
+    }
+}
+
+
+/*
+ Ecolher linha:
+    - Vertical, horizontal ou diagonal
+ Normalizar luminância
+ solicitar em nanometros a escala
+ Histograma - Comprimento de onda x quantidade de luz no comprimento
+ */

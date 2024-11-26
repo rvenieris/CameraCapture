@@ -9,13 +9,19 @@
 /* Begin PBXBuildFile section */
 		BB9F877B2CAADC78001773CC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB9F877A2CAADC78001773CC /* AppDelegate.swift */; };
 		BB9F877D2CAADC78001773CC /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB9F877C2CAADC78001773CC /* SceneDelegate.swift */; };
-		BB9F877F2CAADC78001773CC /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB9F877E2CAADC78001773CC /* ViewController.swift */; };
+		BB9F877F2CAADC78001773CC /* VideoStreamViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB9F877E2CAADC78001773CC /* VideoStreamViewController.swift */; };
 		BB9F87822CAADC78001773CC /* Base in Resources */ = {isa = PBXBuildFile; fileRef = BB9F87812CAADC78001773CC /* Base */; };
 		BB9F87842CAADC79001773CC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BB9F87832CAADC79001773CC /* Assets.xcassets */; };
 		BB9F87872CAADC79001773CC /* Base in Resources */ = {isa = PBXBuildFile; fileRef = BB9F87862CAADC79001773CC /* Base */; };
 		BB9F87922CAADC79001773CC /* CameraCaptureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB9F87912CAADC79001773CC /* CameraCaptureTests.swift */; };
 		BB9F879C2CAADC79001773CC /* CameraCaptureUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB9F879B2CAADC79001773CC /* CameraCaptureUITests.swift */; };
 		BB9F879E2CAADC79001773CC /* CameraCaptureUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB9F879D2CAADC79001773CC /* CameraCaptureUITestsLaunchTests.swift */; };
+		BB9F87AD2CAB1952001773CC /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB9F87AC2CAB1952001773CC /* ViewController.swift */; };
+		BBD7F0742CE7ED7600FF0778 /* Teste1.DNG in Resources */ = {isa = PBXBuildFile; fileRef = BBD7F0712CE7ED7600FF0778 /* Teste1.DNG */; };
+		BBD7F0752CE7ED7600FF0778 /* Teste3.DNG in Resources */ = {isa = PBXBuildFile; fileRef = BBD7F0732CE7ED7600FF0778 /* Teste3.DNG */; };
+		BBD7F0762CE7ED7600FF0778 /* Teste2.DNG in Resources */ = {isa = PBXBuildFile; fileRef = BBD7F0722CE7ED7600FF0778 /* Teste2.DNG */; };
+		BBD7F0792CE7EDB700FF0778 /* ViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBD7F0782CE7EDB700FF0778 /* ViewExtensions.swift */; };
+		BBD7F07B2CE7EFB100FF0778 /* TestViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBD7F07A2CE7EFB100FF0778 /* TestViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -39,7 +45,7 @@
 		BB9F87772CAADC78001773CC /* CameraCapture.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CameraCapture.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB9F877A2CAADC78001773CC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		BB9F877C2CAADC78001773CC /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		BB9F877E2CAADC78001773CC /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		BB9F877E2CAADC78001773CC /* VideoStreamViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoStreamViewController.swift; sourceTree = "<group>"; };
 		BB9F87812CAADC78001773CC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		BB9F87832CAADC79001773CC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		BB9F87862CAADC79001773CC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -49,6 +55,12 @@
 		BB9F87972CAADC79001773CC /* CameraCaptureUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CameraCaptureUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB9F879B2CAADC79001773CC /* CameraCaptureUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraCaptureUITests.swift; sourceTree = "<group>"; };
 		BB9F879D2CAADC79001773CC /* CameraCaptureUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraCaptureUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		BB9F87AC2CAB1952001773CC /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		BBD7F0712CE7ED7600FF0778 /* Teste1.DNG */ = {isa = PBXFileReference; lastKnownFileType = file; path = Teste1.DNG; sourceTree = "<group>"; };
+		BBD7F0722CE7ED7600FF0778 /* Teste2.DNG */ = {isa = PBXFileReference; lastKnownFileType = file; path = Teste2.DNG; sourceTree = "<group>"; };
+		BBD7F0732CE7ED7600FF0778 /* Teste3.DNG */ = {isa = PBXFileReference; lastKnownFileType = file; path = Teste3.DNG; sourceTree = "<group>"; };
+		BBD7F0782CE7EDB700FF0778 /* ViewExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewExtensions.swift; sourceTree = "<group>"; };
+		BBD7F07A2CE7EFB100FF0778 /* TestViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -101,7 +113,11 @@
 			children = (
 				BB9F877A2CAADC78001773CC /* AppDelegate.swift */,
 				BB9F877C2CAADC78001773CC /* SceneDelegate.swift */,
-				BB9F877E2CAADC78001773CC /* ViewController.swift */,
+				BB9F877E2CAADC78001773CC /* VideoStreamViewController.swift */,
+				BB9F87AC2CAB1952001773CC /* ViewController.swift */,
+				BBD7F07A2CE7EFB100FF0778 /* TestViewController.swift */,
+				BBD7F0782CE7EDB700FF0778 /* ViewExtensions.swift */,
+				BBD7F0702CE7ED4E00FF0778 /* TestImages */,
 				BB9F87802CAADC78001773CC /* Main.storyboard */,
 				BB9F87832CAADC79001773CC /* Assets.xcassets */,
 				BB9F87852CAADC79001773CC /* LaunchScreen.storyboard */,
@@ -125,6 +141,16 @@
 				BB9F879D2CAADC79001773CC /* CameraCaptureUITestsLaunchTests.swift */,
 			);
 			path = CameraCaptureUITests;
+			sourceTree = "<group>";
+		};
+		BBD7F0702CE7ED4E00FF0778 /* TestImages */ = {
+			isa = PBXGroup;
+			children = (
+				BBD7F0712CE7ED7600FF0778 /* Teste1.DNG */,
+				BBD7F0722CE7ED7600FF0778 /* Teste2.DNG */,
+				BBD7F0732CE7ED7600FF0778 /* Teste3.DNG */,
+			);
+			path = TestImages;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -231,6 +257,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BBD7F0742CE7ED7600FF0778 /* Teste1.DNG in Resources */,
+				BBD7F0752CE7ED7600FF0778 /* Teste3.DNG in Resources */,
+				BBD7F0762CE7ED7600FF0778 /* Teste2.DNG in Resources */,
 				BB9F87842CAADC79001773CC /* Assets.xcassets in Resources */,
 				BB9F87872CAADC79001773CC /* Base in Resources */,
 				BB9F87822CAADC78001773CC /* Base in Resources */,
@@ -258,8 +287,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BB9F877F2CAADC78001773CC /* ViewController.swift in Sources */,
+				BB9F87AD2CAB1952001773CC /* ViewController.swift in Sources */,
+				BB9F877F2CAADC78001773CC /* VideoStreamViewController.swift in Sources */,
 				BB9F877B2CAADC78001773CC /* AppDelegate.swift in Sources */,
+				BBD7F0792CE7EDB700FF0778 /* ViewExtensions.swift in Sources */,
+				BBD7F07B2CE7EFB100FF0778 /* TestViewController.swift in Sources */,
 				BB9F877D2CAADC78001773CC /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -445,11 +477,14 @@
 				DEVELOPMENT_TEAM = 67AYPRFZH8;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = CameraCapture/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "I need acces to your camera to take great raw pictures.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "I need acces to your photos to save the picture";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -473,11 +508,14 @@
 				DEVELOPMENT_TEAM = 67AYPRFZH8;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = CameraCapture/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "I need acces to your camera to take great raw pictures.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "I need acces to your photos to save the picture";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
