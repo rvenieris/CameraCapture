@@ -253,28 +253,34 @@ class TestViewController: UIViewController {
         guard let capturedColors else { return }
         print(capturedColors[0])
         
-        let xyzColors = capturedColors.compactMap({fromP3ColorToXYZ(p3Color: $0.asTuple())})
+        // Apply filter
+        let filteredColors = capturedColors.map({CIColor(rgb: $0.asTuple(), filter: .none)})
+        
+        let xyzColors = filteredColors.compactMap({fromP3ColorToXYZ(p3Color: $0.asTuple())})
         
         // test conversion to XYZ:
         
         // -- For Testing
 //        let backToColor = xyzColors.compactMap({fromXYZToP3Color(x: $0.x, y: $0.y, z: $0.z)})
-//        let ciColors = backToColor.map({CIColor(rgb: $0)})
+//        let ciColors = backToColor.map({CIColor(rgb: $0, filter: .reduceSmallerChannels)})
 //        captureImageView?.image = ciColors.uiImageWall(height: view.bounds.height)
+//        return
+        //  -- End For Testing
         
         let mappedColors = xyzColors.map({ColorCoordinate.findClosestWavelength(for: $0)})
+        
+        // -- For Testing
         let wavelengthColors = mappedColors.map { xyz in
             let rgb = fromXYZToP3Color(x: xyz.x, y: xyz.y, z: xyz.z)
-            return CIColor(rgb: rgb)
+            return CIColor(rgb: rgb, filter: .none)
         }
         captureImageView?.image = wavelengthColors.uiImageWall()
+        // -- End For Testing
         
         let wavelengths = mappedColors.map({$0.wavelength})
-//
+        
+        // TODO: - retornar isso ou exportar como grafico, entender o que fazer.
         print(wavelengths)
-//        
-//        let image = ColorCoordinate.generateCustomSpectrumImage(size: view.bounds.size, colorCoordinates: wavelengths)
-//        captureImageView?.image = image
         
     }
 }

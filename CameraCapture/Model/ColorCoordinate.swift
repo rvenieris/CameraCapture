@@ -38,26 +38,6 @@ struct ColorCoordinate {
     }
  
     
-    /// Generate a custom spectrum based on a color coordinate array
-    static func generateCustomSpectrumImage(size: CGSize, colorCoordinates: [ColorCoordinate], width: CGFloat = 1) -> UIImage {
-        let renderer = UIGraphicsImageRenderer(size: size)
-            let _ = CGColorSpaceCreateDeviceRGB()
-            
-            let colorCoordinates = colorCoordinates
-            
-            var ciColors: [CIColor] = []
-            for i in 0..<colorCoordinates.count {
-                
-//                if let ciColor = fromXYZToP3Color(x: colorCoordinates[i].x, y: colorCoordinates[i].y, z: colorCoordinates[i].z) {
-//                    ciColors.append(ciColor)
-//                }
-            }
-        
-        let img = ciColors.uiImageWall() ?? UIImage()
-        
-        return img
-    }
-    
     /// Generates the traditional visual spectrum
     static func generateVisualSpectrumImage(size: CGSize) -> UIImage {
         
@@ -66,12 +46,38 @@ struct ColorCoordinate {
         var ciColors: [CIColor] = []
         for i in 0..<colorCoordinates.count {
             let ciColor = fromXYZToP3Color(x: colorCoordinates[i].x, y: colorCoordinates[i].y, z: colorCoordinates[i].z)
-            ciColors.append(CIColor(rgb: ciColor))
+            ciColors.append(CIColor(rgb: ciColor, filter: .none))
             
         }
         let img = ciColors.uiImageWall() ?? UIImage()
         
         return img
+    }
+    
+
+    func colorFromWavelength() -> CIColor? {
+        switch self.wavelength {
+        case 380..<450: // Violet
+            return CIColor(red: 0.56, green: 0.0, blue: 1.0)
+        case 450..<485: // Blue
+            return CIColor(red: 0.0, green: 0.0, blue: 1.0)
+        case 485..<500: // Cyan
+            return CIColor(red: 0.0, green: 1.0, blue: 1.0)
+        case 500..<565: // Green
+            return CIColor(red: 0.0, green: 1.0, blue: 0.0)
+        case 565..<590: // Yellow
+            return CIColor(red: 1.0, green: 1.0, blue: 0.0)
+        case 590..<625: // Orange
+            return CIColor(red: 1.0, green: 0.5, blue: 0.0)
+        case 625..<750: // Red
+            return CIColor(red: 1.0, green: 0.0, blue: 0.0)
+        case ..<380: // Ultra-Violet
+            return CIColor.black // Arbitrary for UV
+        case 750...: // Infra-Red
+            return CIColor.black // Arbitrary for IR
+        default:
+            return CIColor.black // No valid color
+        }
     }
 }
 

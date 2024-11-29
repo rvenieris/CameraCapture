@@ -46,11 +46,6 @@ func applyMatrix(_ matrix: [[Double]], vector: (x: Double, y: Double, z: Double)
 func fromP3ColorToXYZ(p3Color: (red: Double,
                                 green: Double,
                                 blue: Double)) -> (x: Double, y: Double, z: Double)? {
-//    guard let p3ColorSpace = CGColorSpace(name: CGColorSpace.displayP3),
-//          p3Color.colorSpace == p3ColorSpace else {
-//        print("Color is not in the Display P3 color space.")
-//        return nil
-//    }
 
     // Extract RGB components and linearize them
     let rLinear = linearizeRGB(Double(p3Color.red))
@@ -70,14 +65,10 @@ func fromXYZToP3Color(x: Double, y: Double, z: Double) -> (red: Double,
     let linearRGB = applyMatrix(xyzToDisplayP3Matrix, vector: (x: x, y: y, z: z))
     
     // Apply gamma correction to linear RGB values
-    let red = applyGammaCorrection(linearRGB.x) //)
+    let red = applyGammaCorrection(linearRGB.x)
     let green = applyGammaCorrection(linearRGB.y)
     let blue = applyGammaCorrection(linearRGB.z)
     
-//    guard let p3ColorSpace = CGColorSpace(name: CGColorSpace.displayP3) else {
-//        print("Unable to access Display P3 color space.")
-//        return nil
-//    }
     
     // Clamp the final gamma-encoded values to [0, 1] to ensure valid results
     return (red: Double(red),
@@ -95,14 +86,62 @@ func clampToDisplayRange(rgb: (red: Double, green: Double, blue: Double)) -> (re
     )
 }
 
+func apply(filter: CIColor.ConversionFilter,
+           to rgb: (red: Double, green: Double, blue: Double)) -> (red: Double, green: Double, blue: Double) {
+    switch filter {
+    case .enhanceLargestChannel:
+        let enhancement: Double = 1.3
+        let maxChannel = max(rgb.red, rgb.green, rgb.blue)
+        
+        // Add enhancement to the largest channel
+        let newRGB = (
+            red: rgb.red == maxChannel ? rgb.red * enhancement : rgb.red,
+            green: rgb.green == maxChannel ? rgb.green * enhancement : rgb.green,
+            blue: rgb.blue == maxChannel ? rgb.blue * enhancement : rgb.blue
+        )
+        return newRGB
+    case .reduceSmallerChannels:
+        let lambda: Double = 0.9
+        let maxChannel = max(rgb.red, rgb.green, rgb.blue)
+        
+        // Add enhancement to the largest channel
+        let newRGB = (
+            red: rgb.red != maxChannel ? rgb.red * lambda : rgb.red * 1 / lambda,
+            green: rgb.green != maxChannel ? rgb.green * lambda : rgb.green * 1 / lambda*0.9,
+            blue: rgb.blue != maxChannel ? rgb.blue * lambda : rgb.blue * 1 / lambda
+        )
+        return newRGB
+    case .favorGreen:
+        let newRGB = (
+            red: rgb.red*0.9,
+            green: rgb.green*1.2,
+            blue: rgb.blue*0.9
+        )
+        return newRGB
+    case .none:
+        // Return the RGB values unmodified
+        return rgb
+    }
+}
+
+
 extension CIColor {
+    public enum ConversionFilter {
+        case enhanceLargestChannel
+        case reduceSmallerChannels
+        case favorGreen
+        case none
+    }
+    
     public convenience init(rgb: (red: Double,
                                green: Double,
-                               blue: Double)) {
-        let clampped = clampToDisplayRange(rgb: rgb)
+                                  blue: Double), filter: ConversionFilter) {
+        let clampped = apply(filter: filter, to: rgb) //clampToDisplayRange(rgb: rgb)
         let colorSpace = CGColorSpace(name: CGColorSpace.displayP3) ?? CGColorSpaceCreateDeviceRGB()
         self.init(red: clampped.red, green: clampped.green, blue: clampped.blue, colorSpace: colorSpace)!
     }
+    
+    
     
     func asTuple() -> (red: Double, green: Double, blue: Double) {
         return (red: self.red,  green: self.green,  blue: self.blue)

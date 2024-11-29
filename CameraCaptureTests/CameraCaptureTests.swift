@@ -14,6 +14,50 @@ struct CameraCaptureTests {
     
     let THRESHOLD = 0.025 // 2.5% threshold acceptance
     let MAX_NUMERICAL_ERROR = 0.00001
+    
+    
+    
+    @Test func checkRed() async throws {
+        let red = CIColor.red
+        let redTuple = red.asTuple()
+        let xyzRed = fromP3ColorToXYZ(p3Color: redTuple)!
+        
+        let closestWavelength = ColorCoordinate.findClosestWavelength(for: xyzRed).wavelength
+        print("red: ", closestWavelength)
+        assert(620 <= closestWavelength)
+        assert(closestWavelength <= 750)
+    }
+    
+    @Test func checkGreen() async throws {
+        let green = CIColor.green
+        let greenTuple = green.asTuple()
+        let arrayGreens = [
+            greenTuple,
+            (red: 91, green: 134, blue: 70),
+            (red: 114, green: 167, blue: 69),
+            (red: 138, green: 200, blue: 71),
+            (red: 78, green: 95, blue: 43),
+        ]
+        for greenTuple in arrayGreens {
+            let xyzGreen = fromP3ColorToXYZ(p3Color: greenTuple)!
+            
+            let closestWavelength = ColorCoordinate.findClosestWavelength(for: xyzGreen).wavelength
+            print("green: ", closestWavelength)
+            assert(495 <= closestWavelength)
+            assert(closestWavelength <= 570)
+        }
+        
+    }
+    
+    @Test func checkBlue() async throws {
+        let blue = CIColor.blue.asTuple()
+        let xyzBlue = fromP3ColorToXYZ(p3Color: blue)!
+        let closestWavelength = ColorCoordinate.findClosestWavelength(for: xyzBlue).wavelength
+        print("blue: ", closestWavelength)
+        
+        assert(450 <= closestWavelength)
+        assert(closestWavelength <= 475)
+    }
 
 
     // Error calculation

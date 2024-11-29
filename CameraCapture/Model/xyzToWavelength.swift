@@ -93,6 +93,7 @@ extension ColorCoordinate {
         ColorCoordinate(wavelength: 765, x: 0.000117, y: 0.000042, z: 0.000000, x10: 0.73469, y10: 0.26531),
         ColorCoordinate(wavelength: 770, x: 0.000083, y: 0.000030, z: 0.000000, x10: 0.73469, y10: 0.26531),
         ColorCoordinate(wavelength: 775, x: 0.000059, y: 0.000021, z: 0.000000, x10: 0.73469, y10: 0.26531),
-        ColorCoordinate(wavelength: 780, x: 0.000042, y: 0.000015, z: 0.000000, x10: 0.73469, y10: 0.26531)
+        ColorCoordinate(wavelength: 780, x: 0.000042, y: 0.000015, z: 0.000000, x10: 0.73469, y10: 0.26531),
+        ColorCoordinate(wavelength: 0, x: 1.0, y: 1.0, z: 1.0, x10: 1.0, y10: 1.0) // white - none
     ]
 }
