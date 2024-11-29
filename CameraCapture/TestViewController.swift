@@ -251,9 +251,30 @@ class TestViewController: UIViewController {
     
     @objc func exportToFrequency() {
         guard let capturedColors else { return }
+        print(capturedColors[0])
         
-        let xyzColors = capturedColors.map({$0.rgbToXYZ()})
-        print(xyzColors)
+        let xyzColors = capturedColors.compactMap({fromP3ColorToXYZ(p3Color: $0.asTuple())})
+        
+        // test conversion to XYZ:
+        
+        // -- For Testing
+//        let backToColor = xyzColors.compactMap({fromXYZToP3Color(x: $0.x, y: $0.y, z: $0.z)})
+//        let ciColors = backToColor.map({CIColor(rgb: $0)})
+//        captureImageView?.image = ciColors.uiImageWall(height: view.bounds.height)
+        
+        let mappedColors = xyzColors.map({ColorCoordinate.findClosestWavelength(for: $0)})
+        let wavelengthColors = mappedColors.map { xyz in
+            let rgb = fromXYZToP3Color(x: xyz.x, y: xyz.y, z: xyz.z)
+            return CIColor(rgb: rgb)
+        }
+        captureImageView?.image = wavelengthColors.uiImageWall()
+        
+        let wavelengths = mappedColors.map({$0.wavelength})
+//
+        print(wavelengths)
+//        
+//        let image = ColorCoordinate.generateCustomSpectrumImage(size: view.bounds.size, colorCoordinates: wavelengths)
+//        captureImageView?.image = image
         
     }
 }

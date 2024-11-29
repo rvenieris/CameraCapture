@@ -1,22 +1,18 @@
 //
-//  ColorList.swift
+//  xyzToWavelength.swift
 //  CameraCapture
 //
-//  Created by Pedro Gomes on 26/11/24.
+//  Created by Pedro Gomes on 29/11/24.
 //
 
-import Foundation
-import UIKit
 
-struct ColorCoordinate {
-    var wavelength: Int
-    var x: Double
-    var y: Double
-    var z: Double
-    var x10: Double
-    var y10: Double
+import Foundation
+
+
+extension ColorCoordinate {
     
     static let colorCoordinates: [ColorCoordinate] = [
+        ColorCoordinate(wavelength: 0, x: 0, y: 0, z: 0, x10: 0, y10: 0), // NO COLOR
         ColorCoordinate(wavelength: 380, x: 0.001368, y: 0.000039, z: 0.006450, x10: 0.17411, y10: 0.00496),
         ColorCoordinate(wavelength: 385, x: 0.002236, y: 0.000064, z: 0.010550, x10: 0.17401, y10: 0.00498),
         ColorCoordinate(wavelength: 390, x: 0.004243, y: 0.000120, z: 0.020050, x10: 0.17380, y10: 0.00492),
@@ -99,92 +95,4 @@ struct ColorCoordinate {
         ColorCoordinate(wavelength: 775, x: 0.000059, y: 0.000021, z: 0.000000, x10: 0.73469, y10: 0.26531),
         ColorCoordinate(wavelength: 780, x: 0.000042, y: 0.000015, z: 0.000000, x10: 0.73469, y10: 0.26531)
     ]
-}
-
-
-
-/// Test view controller to check visible spectrum
-class XYZViewController: UIViewController {
-    override func viewDidLoad() {
-            super.viewDidLoad()
-
-            // Create an ImageView
-            let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: view.frame.size.height))
-            imageView.contentMode = .scaleToFill
-            view.addSubview(imageView)
-            imageView.image = generateSpectrumImage()
-        }
-    
-    func generateSpectrumImage() -> UIImage {
-            let size = view.bounds.size
-            let renderer = UIGraphicsImageRenderer(size: size)
-            let img = renderer.image { ctx in
-                let colorSpace = CGColorSpaceCreateDeviceRGB()
-                
-                // Draw each segment based on the wavelengths
-                let totalRange = 780.0 - 380.0 // from 380 nm to 780 nm
-                let pixelPerNm = size.width / CGFloat(totalRange)
-                
-                let colorCoordinates = ColorCoordinate.colorCoordinates
-                
-                for i in 0..<colorCoordinates.count {
-                    let wavelength = Double(colorCoordinates[i].wavelength)
-                    let color = UIColor.fromXYZ(x: colorCoordinates[i].x, y: colorCoordinates[i].y, z: colorCoordinates[i].z)
-                    ctx.cgContext.setFillColor(color.cgColor)
-                    
-                    let xPosition = pixelPerNm * CGFloat(wavelength - 380.0)
-                    let width = i < colorCoordinates.count - 1 ? pixelPerNm * CGFloat(Double(colorCoordinates[i + 1].wavelength) - wavelength) : size.width - xPosition
-                    
-                    ctx.cgContext.fill(CGRect(x: xPosition, y: 0, width: width, height: size.height))
-                }
-            }
-            
-            return img
-        }
-        
-
-    func createColorGradient() -> [CGColor] {
-        var colors = [CGColor]()
-        // Assuming 'colorCoordinates' array contains your color data
-        for coordinate in ColorCoordinate.colorCoordinates {
-            let color = UIColor.fromXYZ(x: coordinate.x, y: coordinate.y, z: coordinate.z)
-            colors.append(color.cgColor)
-        }
-        return colors
-    }
-}
-
-// Extension to convert XYZ color model to UIColor
-
-extension UIColor {
-    static func fromXYZ(x: Double, y: Double, z: Double) -> UIColor {
-        // D65 white point
-        let xD65 = 0.95047
-        let yD65 = 1.00000
-        let zD65 = 1.08883
-
-        // Matrix conversion (sRGB D65)
-        var r = 3.2406 * x - 1.5372 * y - 0.4986 * z
-        var g = -0.9689 * x + 1.8758 * y + 0.0415 * z
-        var b = 0.0557 * x - 0.2040 * y + 1.0570 * z
-
-        // Perform gamma correction and clip the values
-        r = clip(color: r)
-        g = clip(color: g)
-        b = clip(color: b)
-        
-        print(r, g, b)
-
-        return UIColor(red: CGFloat(r), green: CGFloat(g), blue: CGFloat(b), alpha: 1.0)
-    }
-
-    // Helper function to clip and adjust colors
-    static func clip(color: Double) -> Double {
-        let color = max(min(color, 1.0), 0.0) // Clip between 0 and 1
-        if color <= 0.0031308 {
-            return 12.92 * color
-        } else {
-            return 1.055 * pow(color, 1 / 2.4) - 0.055 // Apply gamma correction
-        }
-    }
 }
