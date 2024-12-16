@@ -21,23 +21,31 @@ class TestViewController: UIViewController {
     var referenceImageView: UIImageView!
     /// UI of a small visualization of the reference image. Useful for after first capture.
     let miniMap = UIImageView()
-    /// UI that stores the result of the captured line image
-    var captureImageView: UIImageView? = nil
     
-    let exportButton = UIButton(type: .system)
+    init(image: CIImage?) {
+        super.init(nibName: nil, bundle: nil)
+        if image == nil {
+            // Carregar e processar a imagem DNG
+            guard let ciImage = CIImage(forResource: "Teste3", withExtension: "DNG") else {
+                print("Falha ao carregar ou processar a imagem DNG.")
+                return
+            }
+            
+            referenceImage = ciImage
+        } else {
+            referenceImage = image
+        }
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     /// <#Description#>
     /// - Parameter animated: True of false
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        // Carregar e processar a imagem DNG
-        guard let ciImage = CIImage(forResource: "Teste3", withExtension: "DNG") else {
-            print("Falha ao carregar ou processar a imagem DNG.")
-            return
-        }
-        
-        referenceImage = ciImage
         
         createReferenceImageView()
         
@@ -45,7 +53,6 @@ class TestViewController: UIViewController {
         
         createCaptureButton()
         
-        createExportButton()
         
         createRotationSlider()
         
@@ -137,29 +144,6 @@ class TestViewController: UIViewController {
         captureButton.addTarget(self, action: #selector(captureFrequency), for: .touchUpInside)
     }
     
-    private func createExportButton() {
-        exportButton.setTitle("Exportar", for: .normal)
-        exportButton.setTitleColor(.white, for: .normal)
-        exportButton.backgroundColor = .systemBlue
-        exportButton.layer.cornerRadius = 10
-        exportButton.translatesAutoresizingMaskIntoConstraints = false
-        
-        view.addSubview(exportButton)
-        
-        NSLayoutConstraint.activate([
-            exportButton.trailingAnchor.constraint(equalTo: captureButton.trailingAnchor),
-            exportButton.bottomAnchor.constraint(equalTo: captureButton.topAnchor, constant: -20),
-            exportButton.widthAnchor.constraint(equalToConstant: 100),
-            exportButton.heightAnchor.constraint(equalToConstant: 50)
-        ])
-        
-        exportButton.addTarget(self, action: #selector(exportToFrequency), for: .touchUpInside)
-        
-        exportButton.isEnabled = false
-        exportButton.alpha = 0.3
-    }
-    
-    
     private func createCaptureLine(line: UIView, parent: UIView, lineHeight: CGFloat = 1.5) {
         
         line.backgroundColor = .white
@@ -192,6 +176,13 @@ class TestViewController: UIViewController {
         ])
     }
     
+    private func hideInterface() {
+        rotationSlider.isHidden = true
+        referenceLine.isHidden = true
+        miniMap.isHidden = true
+        captureButton.isHidden = true
+    }
+    
     // MARK: - UI Actions
     
     @objc func rotateLine() {
@@ -219,69 +210,19 @@ class TestViewController: UIViewController {
         return image.transformed(by: combinedTransform)
     }
     
-    var capturedColors: [CIColor]? = nil
     @objc func captureFrequency() {
         
         guard let referenceImage else { return }
-        exportButton.isEnabled = true
-        exportButton.alpha = 1.0
-        
         let angle = CGFloat(rotationSlider.value) * .pi / 180
         let capturedImage = rotateAndPreserveSize(referenceImage, by: angle, originalSize: referenceImage.extent.width)
         
         referenceImageView.transform = CGAffineTransform(rotationAngle: -angle)
         print(referenceImage.extent.width)
         let colors = capturedImage.centralLineColors()
-        self.capturedColors = colors
         
-        let wallSize = view.bounds.height
-        let colorWall = colors.uiImageWall(height: wallSize)
-        
-        let maxColors = colors.filter {$0.red == 1 || $0.green == 1 || $0.blue == 1 }
-        print("Cores: \(maxColors.count)")
-        maxColors.forEach {print($0.red, $0.green, $0.blue)}
-        
-        captureImageView?.removeFromSuperview()
-        
-        captureImageView = newImageView(height: wallSize)
-        captureImageView?.image = colorWall
-        view.insertSubview(captureImageView!, aboveSubview: referenceImageView)
-    }
-    
-    
-    @objc func exportToFrequency() {
-        guard let capturedColors else { return }
-        print(capturedColors[0])
-        
-        // Apply filter
-        let filteredColors = capturedColors.map({CIColor(rgb: $0.asTuple(), filter: .none)})
-        
-        let xyzColors = filteredColors.compactMap({fromP3ColorToXYZ(p3Color: $0.asTuple())})
-        
-        // test conversion to XYZ:
-        
-        // -- For Testing
-//        let backToColor = xyzColors.compactMap({fromXYZToP3Color(x: $0.x, y: $0.y, z: $0.z)})
-//        let ciColors = backToColor.map({CIColor(rgb: $0, filter: .reduceSmallerChannels)})
-//        captureImageView?.image = ciColors.uiImageWall(height: view.bounds.height)
-//        return
-        //  -- End For Testing
-        
-        let mappedColors = xyzColors.map({ColorCoordinate.findClosestWavelength(for: $0)})
-        
-        // -- For Testing
-        let wavelengthColors = mappedColors.map { xyz in
-            let rgb = fromXYZToP3Color(x: xyz.x, y: xyz.y, z: xyz.z)
-            return CIColor(rgb: rgb, filter: .none)
-        }
-        captureImageView?.image = wavelengthColors.uiImageWall()
-        // -- End For Testing
-        
-        let wavelengths = mappedColors.map({$0.wavelength})
-        
-        // TODO: - retornar isso ou exportar como grafico, entender o que fazer.
-        print(wavelengths)
-        
+        let capturedViewController = CapturedLineViewController(capturedColors: colors)
+        capturedViewController.modalPresentationStyle = .fullScreen
+        self.present(capturedViewController, animated: false)
     }
 }
 

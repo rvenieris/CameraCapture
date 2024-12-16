@@ -126,7 +126,6 @@ class ViewController: UIViewController {
         videoOutput.setSampleBufferDelegate(self, queue: videoQueue)
         
         
-
         if captureSession.canAddOutput(videoOutput) {
             captureSession.addOutput(videoOutput)
         }
@@ -199,6 +198,7 @@ class ViewController: UIViewController {
 
             // Congelar a imagem na tela
             isImageFrozen = true
+            
         }
         
         captureButton.isSelected = isImageFrozen
@@ -284,11 +284,32 @@ extension ViewController: AVCapturePhotoCaptureDelegate {
 
         // Obter a imagem processada para gerar o histograma
         if let cgImage = photo.cgImageRepresentation() {
+            
+            let ciImage = convertCGImageToCIImage(cgImage)
+            let viewcontroler = TestViewController(image: ciImage)
+            self.present(viewcontroler, animated: false)
+            
+            
             let uiImage = UIImage(cgImage: cgImage)
             DispatchQueue.main.async {
                 self.showHistogram(for: uiImage, channel: self.histogramChannel)
             }
         }
+    }
+    
+    func convertCGImageToCIImage(_ cgImage: CGImage) -> CIImage? {
+        // Ensure the color space is Display P3
+        guard let displayP3ColorSpace = CGColorSpace(name: CGColorSpace.displayP3) else {
+            print("Failed to create Display P3 color space")
+            return nil
+        }
+        
+        // Create a CIImage from the CGImage
+        let ciImage = CIImage(cgImage: cgImage, options: [
+            .colorSpace: displayP3ColorSpace
+        ])
+        
+        return ciImage
     }
 
     func saveDNGToCameraRoll(_ dngData: Data) {

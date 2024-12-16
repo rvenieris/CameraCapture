@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		42272A7C2D1061660045803A /* CapturedLineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42272A7B2D1061660045803A /* CapturedLineViewController.swift */; };
+		42272A802D1079890045803A /* UITextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42272A7F2D1079890045803A /* UITextField.swift */; };
 		42A2363F2CF67D9E0093A1EA /* ColorCoordinate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42A2363E2CF67D970093A1EA /* ColorCoordinate.swift */; };
 		42B35FC72CFA227A00383FEA /* xyzToWavelength.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42B35FC62CFA227A00383FEA /* xyzToWavelength.swift */; };
 		42B35FC82CFA227A00383FEA /* xyzToWavelength.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42B35FC62CFA227A00383FEA /* xyzToWavelength.swift */; };
@@ -53,6 +55,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		42272A7B2D1061660045803A /* CapturedLineViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CapturedLineViewController.swift; sourceTree = "<group>"; };
+		42272A7F2D1079890045803A /* UITextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITextField.swift; sourceTree = "<group>"; };
 		42A2363E2CF67D970093A1EA /* ColorCoordinate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorCoordinate.swift; sourceTree = "<group>"; };
 		42B35FC62CFA227A00383FEA /* xyzToWavelength.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = xyzToWavelength.swift; sourceTree = "<group>"; };
 		42B35FCA2CFA22BD00383FEA /* ColorConversions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorConversions.swift; sourceTree = "<group>"; };
@@ -102,6 +106,24 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		42272A7D2D10616A0045803A /* VC */ = {
+			isa = PBXGroup;
+			children = (
+				42272A7B2D1061660045803A /* CapturedLineViewController.swift */,
+				BB9F87AC2CAB1952001773CC /* ViewController.swift */,
+				BBD7F07A2CE7EFB100FF0778 /* TestViewController.swift */,
+			);
+			path = VC;
+			sourceTree = "<group>";
+		};
+		42272A7E2D10797D0045803A /* View */ = {
+			isa = PBXGroup;
+			children = (
+				42272A7F2D1079890045803A /* UITextField.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
 		42B35FC32CFA222300383FEA /* Model */ = {
 			isa = PBXGroup;
 			children = (
@@ -135,12 +157,12 @@
 		BB9F87792CAADC78001773CC /* CameraCapture */ = {
 			isa = PBXGroup;
 			children = (
+				42272A7E2D10797D0045803A /* View */,
+				42272A7D2D10616A0045803A /* VC */,
 				42B35FC32CFA222300383FEA /* Model */,
 				BB9F877A2CAADC78001773CC /* AppDelegate.swift */,
 				BB9F877C2CAADC78001773CC /* SceneDelegate.swift */,
 				BB9F877E2CAADC78001773CC /* VideoStreamViewController.swift */,
-				BB9F87AC2CAB1952001773CC /* ViewController.swift */,
-				BBD7F07A2CE7EFB100FF0778 /* TestViewController.swift */,
 				BBD7F0782CE7EDB700FF0778 /* ViewExtensions.swift */,
 				BBD7F0702CE7ED4E00FF0778 /* TestImages */,
 				BB9F87802CAADC78001773CC /* Main.storyboard */,
@@ -312,8 +334,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				42272A7C2D1061660045803A /* CapturedLineViewController.swift in Sources */,
 				BB9F87AD2CAB1952001773CC /* ViewController.swift in Sources */,
 				42A2363F2CF67D9E0093A1EA /* ColorCoordinate.swift in Sources */,
+				42272A802D1079890045803A /* UITextField.swift in Sources */,
 				42B35FCB2CFA22BD00383FEA /* ColorConversions.swift in Sources */,
 				BB9F877F2CAADC78001773CC /* VideoStreamViewController.swift in Sources */,
 				42B35FC82CFA227A00383FEA /* xyzToWavelength.swift in Sources */,

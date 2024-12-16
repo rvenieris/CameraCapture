@@ -113,9 +113,9 @@ func apply(filter: CIColor.ConversionFilter,
         return newRGB
     case .favorGreen:
         let newRGB = (
-            red: rgb.red*0.9,
-            green: rgb.green*1.2,
-            blue: rgb.blue*0.9
+            red: rgb.red*0.85,
+            green: rgb.green*2.0,
+            blue: rgb.blue*0.95
         )
         return newRGB
     case .none:
