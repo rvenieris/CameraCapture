@@ -8,6 +8,7 @@
 import UIKit
 import AVFoundation
 import Photos
+import SwiftUI
 
 class ViewController: UIViewController {
 
@@ -23,43 +24,64 @@ class ViewController: UIViewController {
     
     var currentCamera:AVCaptureDevice { availableVideoDevices[currentCameraIndex] }
     
-    lazy var torchButton:UIButton = {
-        let torchButton = UIButton(type: .system)
-        torchButton.frame = CGRect(x: 20, y: 60, width: 100, height: 50)
-
-        // Imagem e título para o estado normal (lanterna desligada)
-        torchButton.setImage(UIImage(systemName: "flashlight.off.fill"), for: .normal)
-        torchButton.setTitle("Off", for: .normal)
-        torchButton.setTitleColor(.gray, for: .normal)
-
-        // Imagem e título para o estado selecionado (lanterna ligada)
-        torchButton.setImage(UIImage(systemName: "flashlight.on.fill "), for: .selected)
-        torchButton.setTitle(" On", for: .selected)
-        torchButton.setTitleColor(.white, for: .selected)
+    
+//    @State var flash = false
+    // MARK: - Components
+    lazy var torchButton: UIViewController = {
+        UIHostingController(rootView: FlashlightView(torchButtonPressed: { [weak self] in
+            self?.torchButtonPressed()
+        }))
         
-        torchButton.contentHorizontalAlignment = .center
-        torchButton.contentVerticalAlignment = .center
-        torchButton.imageView?.contentMode = .scaleAspectFit
-
-        torchButton.backgroundColor = .black.withAlphaComponent(0.5)
-        torchButton.layer.cornerRadius = 10
-
-        torchButton.addTarget(self, action: #selector(torchButtonPressed), for: .touchUpInside)
-        return torchButton
+//        let torchButton = UIButton(type: .system, primaryAction: UIAction(handler: { [weak self] a in
+//            self?.torchButtonPressed()
+//        }))
+//        torchButton.frame = CGRect(x: 20, y: 60, width: 100, height: 50)
+//        
+//        torchButton.configuration = .borderedTinted().updated(for: torchButton)
+//        torchButton.tintColor = .green
+//        // Imagem e título para o estado normal (lanterna desligada)
+//        torchButton.setImage(UIImage(systemName: "flashlight.off.fill"), for: .normal)
+//        torchButton.setTitle("Off", for: .normal)
+//        torchButton.setTitleColor(.gray, for: .normal)
+//
+//        // Imagem e título para o estado selecionado (lanterna ligada)
+//        torchButton.setImage(UIImage(systemName: "flashlight.on.fill"), for: .selected)
+//        torchButton.setTitle(" On", for: .selected)
+//        torchButton.setTitleColor(.white, for: .selected)
+//        
+//        torchButton.contentHorizontalAlignment = .center
+//        torchButton.contentVerticalAlignment = .center
+//        torchButton.imageView?.contentMode = .scaleAspectFit
+//
+//        torchButton.backgroundColor = .black.withAlphaComponent(0.5)
+//        torchButton.layer.cornerRadius = 10
+//
+////        torchButton.addTarget(self, action: #selector(torchButtonPressed), for: .touchUpInside)
+//        return torchButton
     }()
 
-    lazy var switchButton:UIButton = {
-        let switchButton = UIButton(type: .system)
-        switchButton.frame = CGRect(x: view.frame.width - 220, y: 60, width: 200, height: 50)
-        switchButton.setTitle(currentCamera.localizedName, for: .normal)
-        switchButton.setTitleColor(.white, for: .normal)
-        
-        switchButton.backgroundColor = .black.withAlphaComponent(0.5)
-        switchButton.layer.cornerRadius = 10
-
-        
-        switchButton.addTarget(self, action: #selector(switchCameraButtonPressed), for: .touchUpInside)
-        return switchButton
+    lazy var switchButton: UIButton = {
+        let menuButton = UIButton(configuration: .bordered())
+        let switchButton = UIMenu(options: [.singleSelection], children: availableVideoDevices.enumerated().map { (index, ad) in
+            UIAction(title: ad.localizedName) { [weak self] _ in
+                self?.currentCameraIndex = index
+            }
+        })
+        menuButton.setTitle(currentCamera.localizedName, for: .normal)
+        menuButton.menu = switchButton
+        menuButton.showsMenuAsPrimaryAction = true
+        menuButton.tintColor = .white
+//        UIButton(type: .system)
+//        menuButton.frame = CGRect(x: view.frame.width - 220, y: 60, width: 200, height: 50)
+//        switchButton.setTitle(currentCamera.localizedName, for: .normal)
+//        switchButton.setTitleColor(.white, for: .normal)
+//        
+//        switchButton.backgroundColor = .black.withAlphaComponent(0.5)
+//        switchButton.layer.cornerRadius = 10
+//
+//        
+//        switchButton.addTarget(self, action: #selector(switchCameraButtonPressed), for: .touchUpInside)
+        return menuButton
     }()
     
     lazy var captureButton:UIButton = {
@@ -84,6 +106,7 @@ class ViewController: UIViewController {
         return button
     }()
 
+    // MARK: - View Did Load
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -93,9 +116,32 @@ class ViewController: UIViewController {
         view.addSubview(captureButton)
         view.addSubview(channelButton)
         view.addSubview(switchButton)
-        if currentCamera.hasTorch { view.addSubview(torchButton) }
+        
+        switchButton.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            switchButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            switchButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8),
+            switchButton.heightAnchor.constraint(greaterThanOrEqualToConstant: 44)
+        ])
+        if currentCamera.hasTorch {
+            addChild(torchButton)
+            torchButton.view.isOpaque = false
+            torchButton.view.backgroundColor = .clear
+            view.addSubview(torchButton.view)
+            torchButton.didMove(toParent: self)
+            
+            torchButton.view.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
+                torchButton.view.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+                torchButton.view.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8),
+                torchButton.view.heightAnchor.constraint(greaterThanOrEqualToConstant: 44)
+            ])
+            
+//            torchButton.view.frame = CGRect(x: 20, y: 60, width: 100, height: 50)
+        }
     }
 
+    // MARK: - Capture Session
     func setupCaptureSession() {
         captureSession = AVCaptureSession()
         captureSession.sessionPreset = .photo // Usamos .photo para permitir a captura RAW
@@ -166,7 +212,27 @@ class ViewController: UIViewController {
 
         captureSession.commitConfiguration()
     }
+    
+    
 
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        displayLayer.frame = view.bounds
+        switch UIApplication.shared.statusBarOrientation {
+        case .portrait:
+            captureSession.connections.first!.videoOrientation = AVCaptureVideoOrientation.portrait;
+        case .portraitUpsideDown:
+            captureSession.connections.first!.videoOrientation = AVCaptureVideoOrientation.portraitUpsideDown;
+        case .landscapeLeft:
+            captureSession.connections.first!.videoOrientation = AVCaptureVideoOrientation.landscapeLeft;
+        case .landscapeRight:
+            captureSession.connections.first!.videoOrientation = AVCaptureVideoOrientation.landscapeRight;
+        default:
+            captureSession.connections.first!.videoOrientation = AVCaptureVideoOrientation.landscapeRight;
+        }
+    }
+    
+    
     func setupDisplayLayer() {
         displayLayer = AVSampleBufferDisplayLayer()
         displayLayer.videoGravity = .resizeAspectFill
@@ -174,6 +240,7 @@ class ViewController: UIViewController {
         view.layer.addSublayer(displayLayer)
     }
 
+    // MARK: - Actions
     @objc func captureButtonPressed() {
         if isImageFrozen {
             // Se a imagem estiver congelada, retomar o fluxo de vídeo
@@ -231,11 +298,12 @@ class ViewController: UIViewController {
         do {
             try currentCamera.lockForConfiguration()
             currentCamera.torchMode = currentCamera.isTorchActive ? .off : .on
+//            torchButton.tintColor = currentCamera.isTorchActive ? .red : .gray
         } catch {
             print("lockForConfiguration Error: \(error)")
         }
         currentCamera.unlockForConfiguration()
-        torchButton.isSelected.toggle()
+//        torchButton.isSelected.toggle()
     }
     
     func drawHorizontalLine(in context: CGContext, at y: CGFloat) {
@@ -247,6 +315,7 @@ class ViewController: UIViewController {
 
 }
 
+// MARK: - Sample Buffer Delegate
 extension ViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
 
     func captureOutput(
@@ -254,7 +323,7 @@ extension ViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
         didOutput sampleBuffer: CMSampleBuffer,
         from connection: AVCaptureConnection
     ) {
-//        connection.videoOrientation = .portrait
+//        connection.videoRotationAngle = .portrait
 //        connection.videoRotationAngle = .pi / 2
         
         guard !isImageFrozen else { return }
@@ -263,6 +332,7 @@ extension ViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
     }
 }
 
+// MARK: - Photo Capture Delegate
 extension ViewController: AVCapturePhotoCaptureDelegate {
 
     func photoOutput(_ output: AVCapturePhotoOutput,
@@ -282,34 +352,31 @@ extension ViewController: AVCapturePhotoCaptureDelegate {
         // Salvar a foto em DNG no rolo da câmera
         saveDNGToCameraRoll(dngData)
 
+        
         // Obter a imagem processada para gerar o histograma
-        if let cgImage = photo.cgImageRepresentation() {
+        let img = photo.cgImageRepresentation()!
+        let temp = CIImage(cgImage: img)
+        var ciImage = temp;
+        switch UIDevice.current.orientation {
+        case .portrait:
+            ciImage = temp.oriented(forExifOrientation: 6)
+        case .landscapeRight:
+            ciImage = temp.oriented(forExifOrientation: 3)
+        case .landscapeLeft:
+            ciImage = temp.oriented(forExifOrientation: 1)
+        default:
+            break
+        }
+        let viewcontroler = TestViewController(image: ciImage)
+        viewcontroler.modalPresentationStyle = .formSheet
+            self.present(viewcontroler, animated: true)
             
-            let ciImage = convertCGImageToCIImage(cgImage)
-            let viewcontroler = TestViewController(image: ciImage)
-            self.present(viewcontroler, animated: false)
             
-            
-            let uiImage = UIImage(cgImage: cgImage)
+            let uiImage = UIImage(ciImage: ciImage)
             DispatchQueue.main.async {
                 self.showHistogram(for: uiImage, channel: self.histogramChannel)
             }
-        }
-    }
-    
-    func convertCGImageToCIImage(_ cgImage: CGImage) -> CIImage? {
-        // Ensure the color space is Display P3
-        guard let displayP3ColorSpace = CGColorSpace(name: CGColorSpace.displayP3) else {
-            print("Failed to create Display P3 color space")
-            return nil
-        }
         
-        // Create a CIImage from the CGImage
-        let ciImage = CIImage(cgImage: cgImage, options: [
-            .colorSpace: displayP3ColorSpace
-        ])
-        
-        return ciImage
     }
 
     func saveDNGToCameraRoll(_ dngData: Data) {
@@ -350,181 +417,46 @@ extension OSType {
 }
 
 
-enum HistogramChannel:Int, CaseIterable {
-    case red, green, blue, all
-    var haveRed:Bool { return self == .red || self == .all }
-    var haveGreen:Bool { return self == .green || self == .all }
-    var haveBlue:Bool { return self == .blue || self == .all }
-    var redIndex:Double { return haveRed ? 0.299 : 0 }
-    var greenIndex:Double { return haveGreen ? 0.587 : 0 }
-    var blueIndex:Double { return haveBlue ? 0.114 : 0 }
-    var next:HistogramChannel { return HistogramChannel(rawValue: rawValue + 1) ?? .red }
-}
 
-
-extension ViewController {
+struct FlashlightView: View {
     
-
-
-
+    @State var flash: Bool = false
+    var torchButtonPressed: () -> Void = { }
     
-     
-    
-
-    func showHistogram(for image: UIImage, channel:HistogramChannel = .all) {
-        // Calcular o histograma
-        if let histogramData = calculateHistogram(for: image, channel: channel) {
-            // Exibir o histograma
-            let histogramView = HistogramView(frame: CGRect(x: 20, y: 100, width: view.frame.width - 40, height: 200))
-            histogramView.histogramData = histogramData
-            histogramView.setColor(for: channel)
-            histogramView.backgroundColor = UIColor.black.withAlphaComponent(0.5)
-            view.addSubview(histogramView)
-        }
-    }
-
-    func calculateHistogram(for image: UIImage, channel:HistogramChannel = .all, resolution: UInt = 256) -> [Int]? {
-        
-        // Redimensionar a imagem para reduzir o número de pixels
-        guard let resizedImage = image.resize(to: CGSize(square: CGFloat(resolution))),
-              let cgImage = resizedImage.cgImage else { return nil }
-        
-//        guard let cgImage = image.cgImage else { return nil }
-
-        // Criar bitmap context
-        let width = cgImage.width
-        let height = cgImage.height
-
-        let bitsPerComponent = 8
-        let bytesPerPixel = 4
-        let bytesPerRow = bytesPerPixel * width
-        let colorSpace = CGColorSpaceCreateDeviceRGB()
-        guard let bitmapData = malloc(height * bytesPerRow) else { return nil }
-        defer { free(bitmapData) }
-
-        guard let context = CGContext(data: bitmapData,
-                                      width: width,
-                                      height: height,
-                                      bitsPerComponent: bitsPerComponent,
-                                      bytesPerRow: bytesPerRow,
-                                      space: colorSpace,
-                                      bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue)
-        else {
-            return nil
-        }
-
-        context.draw(cgImage, in: CGRect(x: 0, y: 0, width: width, height: height))
-
-        guard let data = context.data else { return nil }
-
-        // Calcular o histograma
-        var histogram = [Int](repeating: 0, count: 256)
-
-        let pixelBuffer = data.bindMemory(to: UInt8.self, capacity: width * height * bytesPerPixel)
-
-        for x in 0..<width {
-            for y in 0..<height {
-                let pixelIndex = (y * bytesPerRow) + (x * bytesPerPixel)
-
-                let red = pixelBuffer[pixelIndex]
-                let green = pixelBuffer[pixelIndex + 1]
-                let blue = pixelBuffer[pixelIndex + 2]
-
-                // Converter para luminância (escala de cinza)
-                let luminance = channel.redIndex * Double(red) + channel.greenIndex * Double(green) + channel.blueIndex * Double(blue)
-                let index = min(255, max(0, Int(luminance)))
-                histogram[index] += 1
+    var body: some View {
+        Button {
+            
+            flash.toggle()
+            self.torchButtonPressed()
+        } label: {
+            HStack {
+                Image(systemName: flash ? "bolt.fill" : "bolt.slash.fill")
+                    .contentTransition(.symbolEffect(.replace))
+//                Image(systemName: "flashlight.\(flashState.flash ? "on" : "off").fill")
+                Text(flash ? "On" : "Off")
+                    .font(.title3)
             }
         }
-
-        return histogram
-    }
-}
-
-// View personalizada para desenhar o histograma
-class HistogramView: UIView {
-
-    var histogramData: [Int] = []
-    var color: UIColor = .white
-
-    override func draw(_ rect: CGRect) {
-        addTapGesture()
-
-        guard !histogramData.isEmpty else { return }
-
-        let maxCount = histogramData.max() ?? 1
-        let width = rect.width / CGFloat(histogramData.count)
-
-        let path = UIBezierPath()
-
-        for (index, value) in histogramData.enumerated() {
-            let x = CGFloat(index) * width
-            let heightRatio = CGFloat(value) / CGFloat(maxCount)
-            let y = rect.height * (1.0 - heightRatio)
-            let barRect = CGRect(x: x, y: y, width: width, height: rect.height * heightRatio)
-            path.append(UIBezierPath(rect: barRect))
-        }
-
-        color.setFill()
-        path.fill()
-    }
-    
-    func addTapGesture() {
-        self.isUserInteractionEnabled = true
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(removeFromSuperview))
-        self.addGestureRecognizer(tapGesture)
-    }
-    
-    func setColor(for channel:HistogramChannel) {
-        switch channel {
-        case .red:
-            color = .red
-        case .green:
-            color = .green
-        case .blue:
-            color = .blue
-        case .all:
-            color = .white
-        }
+        .buttonStyle(.borderedProminent)
+        .tint(flash ? .yellow : .yellow.opacity(0.25))
     }
 }
 
 
-// Extensão para redimensionar UIImage
-extension UIImage {
-    func resize(to size: CGSize) -> UIImage? {
-        UIGraphicsBeginImageContextWithOptions(size, false, self.scale)
-        defer { UIGraphicsEndImageContext() }
-        self.draw(in: CGRect(origin: .zero, size: size))
-        let resized = UIGraphicsGetImageFromCurrentImageContext()
-        return resized
-    }
-}
 
 
-extension CGSize {
-    init (square: CGFloat) {
-        self.init(width: square, height: square)
-    }
-}
 
 
-extension Array where Element == AVCaptureDevice.DeviceType {
-    public static var allCameras: [AVCaptureDevice.DeviceType] {
-        [
-            .builtInWideAngleCamera ,
-            .builtInUltraWideCamera ,
-            .builtInTelephotoCamera ,
-            .builtInDualCamera      ,
-            .builtInDualWideCamera  ,
-            .builtInTripleCamera    ,
-            .continuityCamera       ,
-            .builtInLiDARDepthCamera,
-            .builtInTrueDepthCamera ,
-            .external
-        ]
-    }
-}
+
+
+
+
+
+
+
+
+
+
 
 
 /*

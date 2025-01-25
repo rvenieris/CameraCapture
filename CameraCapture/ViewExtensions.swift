@@ -10,6 +10,7 @@ import UIKit
 
 // CIxxx
 import CoreImage
+import AVFoundation
 
 /// Extensão da `CIImage` que fornece inicializadores convenientes e funções utilitárias.
 extension CIImage {
@@ -188,7 +189,41 @@ extension [UIColor] {
     var ci: [CIColor] { return self.map {$0.ci} }
 }
 
+// Extensão para redimensionar UIImage
+extension UIImage {
+    func resize(to size: CGSize) -> UIImage? {
+        UIGraphicsBeginImageContextWithOptions(size, false, self.scale)
+        defer { UIGraphicsEndImageContext() }
+        self.draw(in: CGRect(origin: .zero, size: size))
+        let resized = UIGraphicsGetImageFromCurrentImageContext()
+        return resized
+    }
+}
 
+
+extension CGSize {
+    init (square: CGFloat) {
+        self.init(width: square, height: square)
+    }
+}
+
+
+extension Array where Element == AVCaptureDevice.DeviceType {
+    public static var allCameras: [AVCaptureDevice.DeviceType] {
+        [
+            .builtInWideAngleCamera ,
+            .builtInUltraWideCamera ,
+            .builtInTelephotoCamera ,
+            .builtInDualCamera      ,
+            .builtInDualWideCamera  ,
+            .builtInTripleCamera    ,
+            .continuityCamera       ,
+            .builtInLiDARDepthCamera,
+            .builtInTrueDepthCamera ,
+            .external
+        ]
+    }
+}
 
 
 

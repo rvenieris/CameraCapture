@@ -20,6 +20,11 @@
 		42B35FCF2CFA24B400383FEA /* ColorCoordinate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42A2363E2CF67D970093A1EA /* ColorCoordinate.swift */; };
 		42B35FD02CFA24C000383FEA /* ViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBD7F0782CE7EDB700FF0778 /* ViewExtensions.swift */; };
 		42B35FD12CFA24C000383FEA /* ViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBD7F0782CE7EDB700FF0778 /* ViewExtensions.swift */; };
+		A0033FED2D44A93E0002665D /* HistogramChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0033FEC2D44A93E0002665D /* HistogramChannel.swift */; };
+		A0033FEE2D44A93E0002665D /* HistogramChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0033FEC2D44A93E0002665D /* HistogramChannel.swift */; };
+		A0033FEF2D44A93E0002665D /* HistogramChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0033FEC2D44A93E0002665D /* HistogramChannel.swift */; };
+		A0033FF12D44AA1C0002665D /* HistogramView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0033FF02D44AA1C0002665D /* HistogramView.swift */; };
+		A0033FF32D44AAEC0002665D /* ViewController+Histogram.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0033FF22D44AAEC0002665D /* ViewController+Histogram.swift */; };
 		BB9F877B2CAADC78001773CC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB9F877A2CAADC78001773CC /* AppDelegate.swift */; };
 		BB9F877D2CAADC78001773CC /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB9F877C2CAADC78001773CC /* SceneDelegate.swift */; };
 		BB9F877F2CAADC78001773CC /* VideoStreamViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB9F877E2CAADC78001773CC /* VideoStreamViewController.swift */; };
@@ -60,6 +65,9 @@
 		42A2363E2CF67D970093A1EA /* ColorCoordinate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorCoordinate.swift; sourceTree = "<group>"; };
 		42B35FC62CFA227A00383FEA /* xyzToWavelength.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = xyzToWavelength.swift; sourceTree = "<group>"; };
 		42B35FCA2CFA22BD00383FEA /* ColorConversions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorConversions.swift; sourceTree = "<group>"; };
+		A0033FEC2D44A93E0002665D /* HistogramChannel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistogramChannel.swift; sourceTree = "<group>"; };
+		A0033FF02D44AA1C0002665D /* HistogramView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistogramView.swift; sourceTree = "<group>"; };
+		A0033FF22D44AAEC0002665D /* ViewController+Histogram.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewController+Histogram.swift"; sourceTree = "<group>"; };
 		BB9F87772CAADC78001773CC /* CameraCapture.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CameraCapture.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB9F877A2CAADC78001773CC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		BB9F877C2CAADC78001773CC /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -111,6 +119,8 @@
 			children = (
 				42272A7B2D1061660045803A /* CapturedLineViewController.swift */,
 				BB9F87AC2CAB1952001773CC /* ViewController.swift */,
+				A0033FF22D44AAEC0002665D /* ViewController+Histogram.swift */,
+				A0033FF02D44AA1C0002665D /* HistogramView.swift */,
 				BBD7F07A2CE7EFB100FF0778 /* TestViewController.swift */,
 			);
 			path = VC;
@@ -127,6 +137,7 @@
 		42B35FC32CFA222300383FEA /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				A0033FEC2D44A93E0002665D /* HistogramChannel.swift */,
 				42B35FC62CFA227A00383FEA /* xyzToWavelength.swift */,
 				42A2363E2CF67D970093A1EA /* ColorCoordinate.swift */,
 				42B35FCA2CFA22BD00383FEA /* ColorConversions.swift */,
@@ -334,13 +345,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A0033FF12D44AA1C0002665D /* HistogramView.swift in Sources */,
 				42272A7C2D1061660045803A /* CapturedLineViewController.swift in Sources */,
 				BB9F87AD2CAB1952001773CC /* ViewController.swift in Sources */,
 				42A2363F2CF67D9E0093A1EA /* ColorCoordinate.swift in Sources */,
 				42272A802D1079890045803A /* UITextField.swift in Sources */,
+				A0033FEF2D44A93E0002665D /* HistogramChannel.swift in Sources */,
 				42B35FCB2CFA22BD00383FEA /* ColorConversions.swift in Sources */,
 				BB9F877F2CAADC78001773CC /* VideoStreamViewController.swift in Sources */,
 				42B35FC82CFA227A00383FEA /* xyzToWavelength.swift in Sources */,
+				A0033FF32D44AAEC0002665D /* ViewController+Histogram.swift in Sources */,
 				BB9F877B2CAADC78001773CC /* AppDelegate.swift in Sources */,
 				BBD7F0792CE7EDB700FF0778 /* ViewExtensions.swift in Sources */,
 				BBD7F07B2CE7EFB100FF0778 /* TestViewController.swift in Sources */,
@@ -356,6 +370,7 @@
 				42B35FC72CFA227A00383FEA /* xyzToWavelength.swift in Sources */,
 				42B35FCD2CFA22BD00383FEA /* ColorConversions.swift in Sources */,
 				42B35FD02CFA24C000383FEA /* ViewExtensions.swift in Sources */,
+				A0033FEE2D44A93E0002665D /* HistogramChannel.swift in Sources */,
 				42B35FCE2CFA24B400383FEA /* ColorCoordinate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -365,6 +380,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				42B35FC92CFA227A00383FEA /* xyzToWavelength.swift in Sources */,
+				A0033FED2D44A93E0002665D /* HistogramChannel.swift in Sources */,
 				42B35FCC2CFA22BD00383FEA /* ColorConversions.swift in Sources */,
 				BB9F879E2CAADC79001773CC /* CameraCaptureUITestsLaunchTests.swift in Sources */,
 				42B35FCF2CFA24B400383FEA /* ColorCoordinate.swift in Sources */,
