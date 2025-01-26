@@ -15,7 +15,7 @@ struct SliceAlignmentView: View {
     @State private var accumulatedRotationAngle = 0.0
     @State private var ongoingRotationAngle = 0.0
     var currentAngle: Double {
-        @Wrapping(0.0..<360) var currentAngle = accumulatedRotationAngle + ongoingRotationAngle
+        @Wrapping(0.0..<180) var currentAngle = accumulatedRotationAngle + ongoingRotationAngle
         return currentAngle
     }
     
@@ -45,28 +45,12 @@ struct SliceAlignmentView: View {
                 loadImage()
             }
             
-            HStack {
-                Text(currentAngle.formatted(.number.precision(.fractionLength(0))) + "º")
-                    .monospacedDigit()
-                    .frame(minWidth: 50)
-                
-                Slider(value: Binding(get: { currentAngle },
-                                      set: { accumulatedRotationAngle = $0 }), in: 0.0...360.0) {
-                    Text(accumulatedRotationAngle.formatted(.number.precision(.fractionLength(0))))
-                }
-            }
-            
-            Button {
-                let angle = Angle.degrees(accumulatedRotationAngle).radians
-                let capturedImage = rotateAndPreserveSize(ciImage!, by: angle, originalSize: ciImage!.extent.width)
-//                referenceImageView.transform = CGAffineTransform(rotationAngle: -angle)
-                colors = capturedImage.centralLineColors()
-                
-            } label: {
-                Label("Slice", systemImage: "arrowtriangle.right.fill.and.line.vertical.and.arrowtriangle.left.fill")
-            }
         }
         .padding(.horizontal)
+        .frame(maxHeight: .infinity)
+        .safeAreaInset(edge: .bottom) {
+            footerControls
+        }
         .gesture(lineRotationGesture)
         .sheet(isPresented: Binding(get: { !colors.isEmpty },
                                     set: { newColors in if !newColors { colors = [] } })) {
@@ -92,8 +76,54 @@ struct SliceAlignmentView: View {
             }
     }
     
+    
+    @ViewBuilder
+    private var footerControls: some View {
+        VStack {
+            rotationSlider
+            continueButton
+                .frame(maxWidth: .infinity, alignment: .trailing)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.top, 12)
+        .padding(.horizontal, 16)
+        .background(.ultraThinMaterial)
+    }
+    @ViewBuilder
+    private var rotationSlider: some View {
+        HStack {
+            Text(currentAngle.formatted(.number.precision(.fractionLength(0))) + "º")
+                .monospacedDigit()
+                .frame(minWidth: 50)
+            
+            Slider(value: Binding(get: { currentAngle },
+                                  set: { accumulatedRotationAngle = $0 }), in: 0.0...180, step: 5) {
+                Text(accumulatedRotationAngle.formatted(.number.precision(.fractionLength(0))))
+            }
+        }
+    }
+    
+    
+    @ViewBuilder
+    private var continueButton: some View {
+        Button {
+            let angle = Angle.degrees(accumulatedRotationAngle).radians
+            let capturedImage = rotateAndPreserveSize(ciImage!, by: angle, originalSize: ciImage!.extent.width)
+            self.colors = capturedImage.centralLineColors()
+        } label: {
+            Label {
+                Text("Slice")
+            } icon: {
+                Image(systemName: "arrowtriangle.right.fill.and.line.vertical.and.arrowtriangle.left.fill")
+                    .rotationEffect(.degrees(currentAngle - 90))
+            }
+            .frame(minHeight: 32)
+            .padding(.horizontal, 4)
+        }
+        .buttonStyle(.borderedProminent)
+    }
     private func loadImage() {
-        let ciImage = CIImage(forResource: "Teste1", withExtension: "DNG")!
+        let ciImage = CIImage(forResource: "grid", withExtension: "jpeg")!
         let context = CIContext(options: nil)
         let cgImage = context.createCGImage(ciImage, from: ciImage.extent)!
         self.ciImage = ciImage
