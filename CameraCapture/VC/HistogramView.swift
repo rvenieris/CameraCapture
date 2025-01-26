@@ -19,7 +19,7 @@ class HistogramView: UIView {
         guard !histogramData.isEmpty else { return }
 
         let maxCount = histogramData.max() ?? 1
-        let width = rect.width / CGFloat(histogramData.count)
+        let width = rect.width / CGFloat(Array(histogramData.enumerated()).last(where: {$0.element > 0 })?.offset ?? histogramData.count)
 
         let path = UIBezierPath()
 
