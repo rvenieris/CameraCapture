@@ -9,7 +9,6 @@ import UIKit
 
 extension ViewController {
     
-
     func showHistogram(for image: UIImage, channel:HistogramChannel = .all) {
         // Calcular o histograma
         if let histogramData = calculateHistogram(for: image, channel: channel) {

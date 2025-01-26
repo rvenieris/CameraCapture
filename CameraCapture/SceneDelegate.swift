@@ -19,7 +19,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         guard let windowScene = (scene as? UIWindowScene) else { return }
         window = UIWindow(windowScene: windowScene)
-        let viewController = /*TestViewController(image: nil)*/ UIHostingController(rootView: SliceAlignmentView()) /*ViewController()*/ /*XYZViewController()*/
+        let viewController = /*TestViewController(image: nil)*/ /*UIHostingController(rootView: SliceAlignmentView())*/ ViewController() /*XYZViewController()*/
 //        viewController.title = "abc"
         let navigation = UINavigationController(rootViewController: viewController)
         navigation.isNavigationBarHidden = true

@@ -152,13 +152,14 @@ extension [CIColor] {
         
         // Iniciar um contexto gráfico com as dimensões especificadas
         UIGraphicsBeginImageContextWithOptions(size, false, 0)
+        defer { UIGraphicsEndImageContext() }
         guard let context = UIGraphicsGetCurrentContext() else {
-            UIGraphicsEndImageContext()
             return nil
         }
         context.clear(CGRect(origin: .zero, size: size))
         // Iterar sobre cada cor e desenhar um retângulo vertical correspondente
         for (index, color) in colors.enumerated() {
+            if Task.isCancelled { return nil }
             let x = CGFloat(index)
             let rect = CGRect(x: x, y: 0, width: 1, height: width * mul)
             if color.red >= 0.9 {
@@ -170,7 +171,7 @@ extension [CIColor] {
         
         // Obter a imagem do contexto gráfico
         let image = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
+//        UIGraphicsEndImageContext()
         
         return image
     }

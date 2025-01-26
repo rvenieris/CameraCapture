@@ -9,8 +9,9 @@ import SwiftUI
 
 struct SliceAlignmentView: View {
     
+    
     @State var image: UIImage?
-    @State var ciImage: CIImage?
+    var ciImage: CIImage
     
     // MARK: Rotation Angle
     @State private var accumulatedRotationAngle = 0.0
@@ -19,6 +20,7 @@ struct SliceAlignmentView: View {
         @Wrapping(0.0..<180) var currentAngle = accumulatedRotationAngle + ongoingRotationAngle
         return currentAngle
     }
+    @State var isRotating = false
     
     // MARK: Debug Rotated Image
     @State private var showRotated = false
@@ -27,7 +29,12 @@ struct SliceAlignmentView: View {
     // MARK: Wall from Image Slice
     @State private var colors: [CIColor] = []
     @State private var wall: UIImage?
+    @State var wallSize: CGSize = .zero
+    @State var redMarker = 0.0
+    @State var blueMarker = 0.0
     
+    
+    @Environment(\.dismiss) private var dismiss
     
     var body: some View {
         VStack {
@@ -54,10 +61,10 @@ struct SliceAlignmentView: View {
             .compositingGroup()
             .task {
                 loadImage()
-                refreshWall()
+                await refreshWall()
             }
-            .onChange(of: currentAngle + ongoingRotationAngle) {
-                refreshWall()
+            .task(id: currentAngle + ongoingRotationAngle) {
+                await refreshWall()
             }
             
             
@@ -78,6 +85,39 @@ struct SliceAlignmentView: View {
                 Image(uiImage: wall)
                     .resizable()
                     .scaledToFit()
+                    .onGeometryChange(for: CGSize.self, of: \.size, action: { newValue in
+                        wallSize = newValue
+                        if redMarker == 0 {
+                            redMarker = 0.25 * wallSize.width
+                            blueMarker = 0.75 * wallSize.width
+                        }
+                    })
+                    .overlay(alignment: .center) {
+                        FrequencyMarkerView(
+                            wallSize: wallSize,
+                            markerPosition: $blueMarker,
+                            isRotating: isRotating,
+                            color: .blue
+                        ) {
+                            Text("400")
+                            Image(systemName: "arrow.left.and.line.vertical.and.arrow.right")
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    .overlay(alignment: .center) {
+                        FrequencyMarkerView(
+                            wallSize: wallSize,
+                            markerPosition: $redMarker,
+                            isRotating: isRotating,
+                            color: .red
+                        ) {
+                            Text("700")
+                            Image(systemName: "arrow.left.and.line.vertical.and.arrow.right")
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    .animation(.snappy(duration: 0.1), value: redMarker)
+                    .animation(.snappy(duration: 0.1), value: blueMarker)
             }
         }
         .padding(.horizontal)
@@ -86,12 +126,30 @@ struct SliceAlignmentView: View {
             footerControls
         }
         .gesture(lineRotationGesture)
+        .task(id: currentAngle) {
+            withAnimation(.easeInOut(duration: 0.1)) {
+                isRotating = true
+            }
+            try? await Task.sleep(for: .seconds(1))
+            withAnimation(.easeInOut(duration: 0.4)) {
+                isRotating = false
+            }
+        }
 //        .sheet(isPresented: Binding(get: { !colors.isEmpty },
 //                                    set: { newColors in if !newColors { colors = [] } })) {
 //            CapturedLineViewController.swiftUI {
 //                CapturedLineViewController(capturedColors: colors)
 //            }
 //        }
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                Button(role: .cancel) {
+                    dismiss()
+                } label: {
+                    Text("Cancel")
+                }
+            }
+        }
     }
     
     // MARK: Rotation Gesture
@@ -142,7 +200,7 @@ struct SliceAlignmentView: View {
     @ViewBuilder
     private var continueButton: some View {
         Button {
-            self.refreshWall()
+            Task { await self.refreshWall() }
         } label: {
             Label {
                 Text("Slice")
@@ -157,22 +215,34 @@ struct SliceAlignmentView: View {
     }
     
     // MARK: - Actions
+    
     private func loadImage() {
-        let ciImage = CIImage(forResource: "Teste3", withExtension: "DNG")!
+//        let ciImage = CIImage(forResource: "Teste3", withExtension: "DNG")!
         let context = CIContext(options: nil)
         let cgImage = context.createCGImage(ciImage, from: ciImage.extent)!
-        self.ciImage = ciImage
+//        self.ciImage = ciImage
         self.image = UIImage(cgImage: cgImage).preparingThumbnail(of: CGSize(width: 500, height: 500))
     }
     
-    private func refreshWall() {
-        let angle = Angle.degrees(accumulatedRotationAngle).radians
-        let capturedImage = rotateAndPreserveSize(ciImage!, by: angle, originalSize: ciImage!.extent.width)
-        self.colors = capturedImage.centralLineColors()
+    nonisolated private func refreshWall() async {
+        let angle = await Angle.degrees(accumulatedRotationAngle).radians
+        guard !Task.isCancelled else { return }
+        
+        let capturedImage = await rotateAndPreserveSize(ciImage, by: angle, originalSize: ciImage.extent.width)
         let context = CIContext(options: nil)
         let cgImage = context.createCGImage(capturedImage, from: capturedImage.extent)!
-        self.rotated = UIImage(cgImage: cgImage)
-        self.wall = colors.uiImageWall2(mul: 0.75)
+        guard !Task.isCancelled else { return }
+        
+        let centralColors = capturedImage.centralLineColors()
+        let rotated = UIImage(cgImage: cgImage)
+        guard !Task.isCancelled else { return }
+        
+        let wall = centralColors.uiImageWall2(mul: 0.75)
+        await MainActor.run {
+            self.colors = centralColors
+            self.rotated = rotated
+            if let wall { self.wall = wall }
+        }
     }
     
     private func rotateAndPreserveSize(_ image: CIImage, by radians: CGFloat, originalSize: CGFloat = 4032) -> CIImage {
@@ -194,6 +264,44 @@ struct SliceAlignmentView: View {
     }
 }
 
-#Preview {
-    SliceAlignmentView(/*image: UIImage(ciImage: r!.outputImage!)*/)
+
+//#Preview {
+//    SliceAlignmentView(/*image: UIImage(ciImage: r!.outputImage!)*/)
+//}
+
+struct FrequencyMarkerView<Label: View>: View {
+    
+    var wallSize: CGSize
+    @Binding var markerPosition: Double
+    var isRotating: Bool
+    var color: Color
+    @ViewBuilder var label: () -> Label
+    var body: some View {
+        Rectangle()
+            .fill(.white)
+            .frame(width: 3, height: wallSize.height/1.5)
+            .blendMode(.difference)
+            .overlay {
+                VStack {
+                    label()
+                }
+                .monospaced()
+                .fixedSize(horizontal: true, vertical: false)
+                .padding(.vertical, 4)
+                .padding(.horizontal, 8)
+                .background {
+                    RoundedRectangle(cornerRadius: 4)
+                        .fill(color)
+                }
+            }
+            .position(x: markerPosition)
+            .gesture(DragGesture().onChanged({ v in
+                markerPosition = v.location.x
+            }))
+            .offset(y: wallSize.height/2)
+            .opacity(!isRotating ? 1 : 0)
+        //                            .animation(.default, value: isRotating)
+    }
 }
+
+
