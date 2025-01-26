@@ -25,7 +25,7 @@ extension CIImage {
     ///
     /// - Returns: Uma instância opcional de `CIImage` se o recurso for encontrado e a inicialização for bem-sucedida; caso contrário, `nil`.
     ///
-    /// - Note: Se a imagem contiver informações de orientação, elas não serão aplicadas (`applyOrientationProperty` é definido como `false`).
+    /// - Note: Se a imagem contiver informações de orientação, elas **SERÃO** aplicadas (`applyOrientationProperty` é definido como `false`).
     convenience init?(forResource resource: String, withExtension ext: String) {
         guard let url = (Bundle.main.url(forResource: resource, withExtension: ext.lowercased()) ??
                          Bundle.main.url(forResource: resource, withExtension: ext.uppercased())) else {
@@ -33,7 +33,7 @@ extension CIImage {
             return nil
         }
         
-        self.init(contentsOf: url, options: [CIImageOption.applyOrientationProperty: false])
+        self.init(contentsOf: url, options: [CIImageOption.applyOrientationProperty: true])
     }
     
     /// Extrai as cores da linha central horizontal da imagem.
