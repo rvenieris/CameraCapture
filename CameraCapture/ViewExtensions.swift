@@ -88,10 +88,11 @@ extension CIImage {
             let red   = CGFloat(pixelBuffer[offset + 0]) / 255.0
             let green = CGFloat(pixelBuffer[offset + 1]) / 255.0
             let blue  = CGFloat(pixelBuffer[offset + 2]) / 255.0
+            let alpha  = CGFloat(pixelBuffer[offset + 3]) / 255.0
             // let alpha = CGFloat(pixelBuffer[offset + 3]) / 255.0 // O canal alfa é ignorado
             
             // Criar um objeto CIColor a partir dos componentes extraídos.
-            let ciColor = CIColor(red: red, green: green, blue: blue, colorSpace: colorSpace)
+            let ciColor = CIColor(red: red, green: green, blue: blue, alpha: alpha, colorSpace: colorSpace)
             result.append(ciColor ?? CIColor.blue)
         }
         return result
@@ -133,6 +134,37 @@ extension [CIColor] {
             let x = CGFloat(index)
             let rect = CGRect(x: x, y: 0, width: 1, height: height)
             context.setFillColor(red: color.red, green: color.green, blue: color.blue, alpha: 1)
+            context.fill(rect)
+        }
+        
+        // Obter a imagem do contexto gráfico
+        let image = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        return image
+    }
+    
+    
+    func uiImageWall2(mul: Double) -> UIImage? {
+        let colors =  self
+        let width = CGFloat(colors.count)
+        let size = CGSize(width: width, height: width * mul)
+        
+        // Iniciar um contexto gráfico com as dimensões especificadas
+        UIGraphicsBeginImageContextWithOptions(size, false, 0)
+        guard let context = UIGraphicsGetCurrentContext() else {
+            UIGraphicsEndImageContext()
+            return nil
+        }
+        context.clear(CGRect(origin: .zero, size: size))
+        // Iterar sobre cada cor e desenhar um retângulo vertical correspondente
+        for (index, color) in colors.enumerated() {
+            let x = CGFloat(index)
+            let rect = CGRect(x: x, y: 0, width: 1, height: width * mul)
+            if color.red >= 0.9 {
+                print("red \(Double(color.green).formatted(.number.precision(.fractionLength(0...2)))) \(Double(color.blue).formatted(.number.precision(.fractionLength(0...2))))")
+            }
+            context.setFillColor(red: color.red, green: color.green, blue: color.blue, alpha: color.alpha)
             context.fill(rect)
         }
         

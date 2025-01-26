@@ -47,6 +47,7 @@ class CapturedLineViewController: UIViewController {
         let colorWall = colors.uiImageWall(height: wallSize)
         captureImageView = newImageView(height: wallSize)
         captureImageView?.image = colorWall
+//        captureImageView?.layer.magnificationFilter = .nearest
         view.addSubview(captureImageView!)
         
     }

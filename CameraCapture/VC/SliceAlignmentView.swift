@@ -11,7 +11,9 @@ struct SliceAlignmentView: View {
     
     @State var image: UIImage?
     @State var ciImage: CIImage?
-    
+    @State var showRotated = false
+    @State var rotated: UIImage?
+    @State var wall: UIImage?
     @State private var accumulatedRotationAngle = 0.0
     @State private var ongoingRotationAngle = 0.0
     var currentAngle: Double {
@@ -25,17 +27,20 @@ struct SliceAlignmentView: View {
         VStack {
             Group {
                 if let image {
-                    Image(uiImage: image)
-                        .resizable()
-                        .scaledToFit()
+                    VStack {
+                        Image(uiImage: image)
+                            .resizable()
+                            .scaledToFit()
+                        
+                    }
                 } else {
                     Color.blue
                 }
             }
             .overlay {
                 Rectangle()
-                    .fill(.black)
-                    .blendMode(.softLight)
+                    .fill(.gray)
+                    .blendMode(.hardLight)
                     .frame(width: 10, height: 2000)
                     .rotationEffect(.degrees(currentAngle - 90))
             }
@@ -43,8 +48,32 @@ struct SliceAlignmentView: View {
             .compositingGroup()
             .task {
                 loadImage()
+                refreshWall()
+            }
+            .onChange(of: currentAngle + ongoingRotationAngle) {
+                refreshWall()
             }
             
+            
+            if showRotated, let rotated {
+                Image(uiImage: rotated)
+                    .resizable()
+                    .scaledToFit()
+                    .overlay {
+                        Rectangle()
+                            .fill(.gray)
+                            .blendMode(.hardLight)
+                            .frame(width: 5, height: 2000)
+                            .rotationEffect(.degrees(90))
+                    }
+                    .clipped()
+            }
+            if let wall {
+                Image(uiImage: wall)
+                    .resizable()
+                    .scaledToFit()
+                    .aspectRatio(1, contentMode: .fit)
+                }
         }
         .padding(.horizontal)
         .frame(maxHeight: .infinity)
@@ -52,12 +81,12 @@ struct SliceAlignmentView: View {
             footerControls
         }
         .gesture(lineRotationGesture)
-        .sheet(isPresented: Binding(get: { !colors.isEmpty },
-                                    set: { newColors in if !newColors { colors = [] } })) {
-            CapturedLineViewController.swiftUI {
-                CapturedLineViewController(capturedColors: colors)
-            }
-        }
+//        .sheet(isPresented: Binding(get: { !colors.isEmpty },
+//                                    set: { newColors in if !newColors { colors = [] } })) {
+//            CapturedLineViewController.swiftUI {
+//                CapturedLineViewController(capturedColors: colors)
+//            }
+//        }
     }
     
     private var lineRotationGesture: some Gesture {
@@ -77,18 +106,20 @@ struct SliceAlignmentView: View {
     }
     
     
+    
     @ViewBuilder
     private var footerControls: some View {
         VStack {
             rotationSlider
-            continueButton
-                .frame(maxWidth: .infinity, alignment: .trailing)
+//            continueButton
+//                .frame(maxWidth: .infinity, alignment: .trailing)
         }
         .frame(maxWidth: .infinity)
         .padding(.top, 12)
         .padding(.horizontal, 16)
         .background(.ultraThinMaterial)
     }
+    
     @ViewBuilder
     private var rotationSlider: some View {
         HStack {
@@ -103,13 +134,10 @@ struct SliceAlignmentView: View {
         }
     }
     
-    
     @ViewBuilder
     private var continueButton: some View {
         Button {
-            let angle = Angle.degrees(accumulatedRotationAngle).radians
-            let capturedImage = rotateAndPreserveSize(ciImage!, by: angle, originalSize: ciImage!.extent.width)
-            self.colors = capturedImage.centralLineColors()
+            self.refreshWall()
         } label: {
             Label {
                 Text("Slice")
@@ -122,14 +150,28 @@ struct SliceAlignmentView: View {
         }
         .buttonStyle(.borderedProminent)
     }
+    
     private func loadImage() {
-        let ciImage = CIImage(forResource: "grid", withExtension: "jpeg")!
+        let ciImage = CIImage(forResource: "Teste3", withExtension: "DNG")!
         let context = CIContext(options: nil)
         let cgImage = context.createCGImage(ciImage, from: ciImage.extent)!
         self.ciImage = ciImage
         self.image = UIImage(cgImage: cgImage).preparingThumbnail(of: CGSize(width: 500, height: 500))
     }
     
+    
+    
+    
+    
+    private func refreshWall() {
+        let angle = Angle.degrees(accumulatedRotationAngle).radians
+        let capturedImage = rotateAndPreserveSize(ciImage!, by: angle, originalSize: ciImage!.extent.width)
+        self.colors = capturedImage.centralLineColors()
+        let context = CIContext(options: nil)
+        let cgImage = context.createCGImage(capturedImage, from: capturedImage.extent)!
+        self.rotated = UIImage(cgImage: cgImage)
+        self.wall = colors.uiImageWall2(mul: 0.5)
+    }
     private func rotateAndPreserveSize(_ image: CIImage, by radians: CGFloat, originalSize: CGFloat = 4032) -> CIImage {
         // Calculate the diagonal length to ensure the rotated image fits within the original size
         let diagonal = sqrt(pow(originalSize, 2) + pow(originalSize, 2))
