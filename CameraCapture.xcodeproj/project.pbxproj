@@ -27,6 +27,8 @@
 		A0033FF32D44AAEC0002665D /* ViewController+Histogram.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0033FF22D44AAEC0002665D /* ViewController+Histogram.swift */; };
 		A00340012D4597B60002665D /* SliceAlignmentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00340002D4597B60002665D /* SliceAlignmentView.swift */; };
 		A00340032D45A7C40002665D /* a.png in Resources */ = {isa = PBXBuildFile; fileRef = A00340022D45A7C40002665D /* a.png */; };
+		A00340072D45D85C0002665D /* SwiftUIViewControllerRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00340062D45D85C0002665D /* SwiftUIViewControllerRepresentable.swift */; };
+		A00340092D45D87E0002665D /* Wrapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00340082D45D87E0002665D /* Wrapping.swift */; };
 		BB9F877B2CAADC78001773CC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB9F877A2CAADC78001773CC /* AppDelegate.swift */; };
 		BB9F877D2CAADC78001773CC /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB9F877C2CAADC78001773CC /* SceneDelegate.swift */; };
 		BB9F877F2CAADC78001773CC /* VideoStreamViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB9F877E2CAADC78001773CC /* VideoStreamViewController.swift */; };
@@ -72,6 +74,8 @@
 		A0033FF22D44AAEC0002665D /* ViewController+Histogram.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewController+Histogram.swift"; sourceTree = "<group>"; };
 		A00340002D4597B60002665D /* SliceAlignmentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SliceAlignmentView.swift; sourceTree = "<group>"; };
 		A00340022D45A7C40002665D /* a.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = a.png; sourceTree = "<group>"; };
+		A00340062D45D85C0002665D /* SwiftUIViewControllerRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftUIViewControllerRepresentable.swift; sourceTree = "<group>"; };
+		A00340082D45D87E0002665D /* Wrapping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Wrapping.swift; sourceTree = "<group>"; };
 		BB9F87772CAADC78001773CC /* CameraCapture.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CameraCapture.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB9F877A2CAADC78001773CC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		BB9F877C2CAADC78001773CC /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -121,6 +125,8 @@
 		42272A7D2D10616A0045803A /* VC */ = {
 			isa = PBXGroup;
 			children = (
+				A00340082D45D87E0002665D /* Wrapping.swift */,
+				A00340062D45D85C0002665D /* SwiftUIViewControllerRepresentable.swift */,
 				42272A7B2D1061660045803A /* CapturedLineViewController.swift */,
 				BB9F87AC2CAB1952001773CC /* ViewController.swift */,
 				A00340002D4597B60002665D /* SliceAlignmentView.swift */,
@@ -361,7 +367,9 @@
 				A0033FEF2D44A93E0002665D /* HistogramChannel.swift in Sources */,
 				42B35FCB2CFA22BD00383FEA /* ColorConversions.swift in Sources */,
 				BB9F877F2CAADC78001773CC /* VideoStreamViewController.swift in Sources */,
+				A00340072D45D85C0002665D /* SwiftUIViewControllerRepresentable.swift in Sources */,
 				42B35FC82CFA227A00383FEA /* xyzToWavelength.swift in Sources */,
+				A00340092D45D87E0002665D /* Wrapping.swift in Sources */,
 				A0033FF32D44AAEC0002665D /* ViewController+Histogram.swift in Sources */,
 				BB9F877B2CAADC78001773CC /* AppDelegate.swift in Sources */,
 				BBD7F0792CE7EDB700FF0778 /* ViewExtensions.swift in Sources */,
