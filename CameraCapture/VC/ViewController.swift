@@ -10,6 +10,7 @@ import AVFoundation
 import Photos
 import SwiftUI
 
+
 class ViewController: UIViewController {
 
     var captureSession: AVCaptureSession!
@@ -18,7 +19,7 @@ class ViewController: UIViewController {
     var displayLayer: AVSampleBufferDisplayLayer!
 
     var isImageFrozen = false // Para controlar o estado de congelamento da imagem
-    var histogramChannel:HistogramChannel = .all
+    var histogramChannel: HistogramChannel = .all
     var currentCameraIndex = 0
     var availableVideoDevices: [AVCaptureDevice] = []
     
@@ -50,30 +51,21 @@ class ViewController: UIViewController {
         return menuButton
     }()
     
-    
-    
     lazy var captureButton: UIHostingController = {
         UIHostingController(
             rootView: MainCameraControls(
                 capture: { [weak self] in
                     self?.captureButtonPressed()
-                }, nextStep: { [weak self] in self?.nextStep() },
+                },
                 histogramChannelSelected: { [weak self] h in
                     self?.changeChannel(h)
+                },
+                nextStep: {
+                    [weak self] in self?.nextStep()
                 })
         )
     }()
 
-//    lazy var channelButton:UIButton = {
-//        let button = UIButton(type: .system)
-//        button.frame = CGRect(x: ((view.frame.width - 60)/2) - 100, y: view.frame.height - 100, width: 60, height: 60)
-//        button.layer.cornerRadius = 30
-//        button.backgroundColor = UIColor.gray
-//        button.setTitleColor(.white, for: .normal)
-//        button.setTitleColor(.blue, for: .selected)
-//        button.addTarget(self, action: #selector(changeChannel), for: .touchUpInside)
-//        return button
-//    }()
 
     // MARK: - View Did Load
     override func viewDidLoad() {
@@ -82,6 +74,8 @@ class ViewController: UIViewController {
         setupCaptureSession()
         setupDisplayLayer()
         
+        
+        /// Capture Button
         addChild(captureButton)
         view.addSubview(captureButton.view)
         captureButton.didMove(toParent: self)
@@ -92,30 +86,28 @@ class ViewController: UIViewController {
             captureButton.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             captureButton.view.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         ])
-//        view.addSubview(channelButton)
-        view.addSubview(switchButton)
         
+        // Switch Histogram Channel Button
+        view.addSubview(switchButton)
         switchButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             switchButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             switchButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8),
             switchButton.heightAnchor.constraint(greaterThanOrEqualToConstant: 44)
         ])
+        
+        // Flashlight Button
         if currentCamera.hasTorch {
             addChild(torchButton)
-            torchButton.view.isOpaque = false
-            torchButton.view.backgroundColor = .clear
             view.addSubview(torchButton.view)
             torchButton.didMove(toParent: self)
-            
+            torchButton.view.backgroundColor = .clear
             torchButton.view.translatesAutoresizingMaskIntoConstraints = false
             NSLayoutConstraint.activate([
                 torchButton.view.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
                 torchButton.view.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8),
                 torchButton.view.heightAnchor.constraint(greaterThanOrEqualToConstant: 44)
             ])
-            
-//            torchButton.view.frame = CGRect(x: 20, y: 60, width: 100, height: 50)
         }
     }
 
@@ -286,18 +278,11 @@ class ViewController: UIViewController {
         
         let viewcontroler = UIHostingController(rootView: NavigationStack {
             SliceAlignmentView(ciImage: capturedCIImage)
-            })
+        })
         viewcontroler.modalPresentationStyle = .formSheet
         self.present(viewcontroler, animated: true)
     }
     
-    func drawHorizontalLine(in context: CGContext, at y: CGFloat) {
-        let lineWidth: CGFloat = 1.0
-//        let lineColor: CGColor = UIColor.black.cgColor
-        context.setLineDash(phase: 0.0, lengths: [lineWidth])
-                                                  context.setLineDash(phase: 0.0, lengths: [lineWidth])
-                                                  }
-
 }
 
 // MARK: - Sample Buffer Delegate
@@ -312,7 +297,7 @@ extension ViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
 //        connection.videoRotationAngle = .pi / 2
         
         guard !isImageFrozen else { return }
-            // Enfileirar o sampleBuffer para exibição
+        // Enfileirar o sampleBuffer para exibição
         displayLayer.sampleBufferRenderer.enqueue(sampleBuffer)
     }
 }
@@ -413,122 +398,6 @@ extension OSType {
         }
     }
 }
-
-
-
-struct FlashlightView: View {
-    
-    @State var flash: Bool = false
-    var torchButtonPressed: () -> Void = { }
-    
-    var body: some View {
-        Button {
-            
-            flash.toggle()
-            self.torchButtonPressed()
-        } label: {
-            HStack {
-                Image(systemName: flash ? "bolt.fill" : "bolt.slash.fill")
-                    .contentTransition(.symbolEffect(.replace))
-//                Image(systemName: "flashlight.\(flashState.flash ? "on" : "off").fill")
-                Text(flash ? "On" : "Off")
-                    .font(.title3)
-            }
-        }
-        .buttonStyle(.borderedProminent)
-        .tint(flash ? .yellow : .yellow.opacity(0.25))
-    }
-}
-
-
-
-struct MainCameraControls: View {
-    
-    var capture: () -> Void = { }
-    var nextStep: () -> Void = { }
-//    var showChannelPicker: () -> Bool = { false }
-//    @State var channelPickerVisibility = false
-    var histogramChannelSelected: (HistogramChannel) -> Void = { _ in }
-    @State var h: HistogramChannel = .all
-    @State var captured = false
-    
-    var body: some View {
-        ZStack {
-            Button {
-                capture()
-                captured.toggle()
-            } label: {
-                Circle()
-                    .fill(captured ? .gray : .white)
-                    .frame(width: 55, height: 55)
-                    .overlay {
-                        Image(systemName: "xmark")
-                            .font(.title3.weight(.semibold))
-                            .foregroundStyle(.white)
-                    }
-            }
-            .padding(5)
-            .background {
-                Circle()
-                    .stroke(.white, lineWidth: 5)
-            }
-            .frame(maxWidth: .infinity)
-            
-            if captured {
-                HStack {
-                    Picker("H", selection: $h) {
-                        Text("R")
-                            .foregroundStyle(.red)
-                            .tag(HistogramChannel.red)
-                        Text("G")
-                            .foregroundStyle(.green)
-                            .tag(HistogramChannel.green)
-                        Text("B")
-                            .foregroundStyle(.blue)
-                            .tag(HistogramChannel.blue)
-                        Text("All")
-                            .tag(HistogramChannel.all)
-                    }
-                    .pickerStyle(.segmented)
-                    .fixedSize()
-                    .background(.background, in: .rect(cornerRadius: 8))
-                    .font(.subheadline)
-                    .onChange(of: h) {
-                        histogramChannelSelected(h)
-                    }
-                    
-                    Spacer()
-                    
-                    Button {
-                        nextStep()
-                    } label: {
-                        Label("Continue", systemImage: "trapezoid.and.line.vertical.fill")
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .padding(.trailing, 8)
-                }
-                .padding(.horizontal, 8)
-                .frame(maxWidth: .infinity, alignment: .leading)
-            }
-        }
-    }
-}
-
-#Preview {
-    MainCameraControls()
-}
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 /*

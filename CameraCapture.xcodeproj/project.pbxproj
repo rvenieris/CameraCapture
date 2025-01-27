@@ -30,6 +30,8 @@
 		A00340072D45D85C0002665D /* SwiftUIViewControllerRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00340062D45D85C0002665D /* SwiftUIViewControllerRepresentable.swift */; };
 		A00340092D45D87E0002665D /* Wrapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00340082D45D87E0002665D /* Wrapping.swift */; };
 		A003400D2D45DADA0002665D /* grid.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = A003400C2D45DADA0002665D /* grid.jpeg */; };
+		A003400F2D4756180002665D /* MainCameraControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = A003400E2D4756180002665D /* MainCameraControls.swift */; };
+		A00340112D4756940002665D /* FlashlightView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00340102D4756940002665D /* FlashlightView.swift */; };
 		BB9F877B2CAADC78001773CC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB9F877A2CAADC78001773CC /* AppDelegate.swift */; };
 		BB9F877D2CAADC78001773CC /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB9F877C2CAADC78001773CC /* SceneDelegate.swift */; };
 		BB9F877F2CAADC78001773CC /* VideoStreamViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB9F877E2CAADC78001773CC /* VideoStreamViewController.swift */; };
@@ -78,6 +80,8 @@
 		A00340062D45D85C0002665D /* SwiftUIViewControllerRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftUIViewControllerRepresentable.swift; sourceTree = "<group>"; };
 		A00340082D45D87E0002665D /* Wrapping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Wrapping.swift; sourceTree = "<group>"; };
 		A003400C2D45DADA0002665D /* grid.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = grid.jpeg; sourceTree = "<group>"; };
+		A003400E2D4756180002665D /* MainCameraControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainCameraControls.swift; sourceTree = "<group>"; };
+		A00340102D4756940002665D /* FlashlightView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlashlightView.swift; sourceTree = "<group>"; };
 		BB9F87772CAADC78001773CC /* CameraCapture.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CameraCapture.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB9F877A2CAADC78001773CC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		BB9F877C2CAADC78001773CC /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -131,6 +135,8 @@
 				A00340062D45D85C0002665D /* SwiftUIViewControllerRepresentable.swift */,
 				42272A7B2D1061660045803A /* CapturedLineViewController.swift */,
 				BB9F87AC2CAB1952001773CC /* ViewController.swift */,
+				A00340102D4756940002665D /* FlashlightView.swift */,
+				A003400E2D4756180002665D /* MainCameraControls.swift */,
 				A00340002D4597B60002665D /* SliceAlignmentView.swift */,
 				A0033FF22D44AAEC0002665D /* ViewController+Histogram.swift */,
 				A0033FF02D44AA1C0002665D /* HistogramView.swift */,
@@ -363,6 +369,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				A0033FF12D44AA1C0002665D /* HistogramView.swift in Sources */,
+				A00340112D4756940002665D /* FlashlightView.swift in Sources */,
+				A003400F2D4756180002665D /* MainCameraControls.swift in Sources */,
 				42272A7C2D1061660045803A /* CapturedLineViewController.swift in Sources */,
 				A00340012D4597B60002665D /* SliceAlignmentView.swift in Sources */,
 				BB9F87AD2CAB1952001773CC /* ViewController.swift in Sources */,

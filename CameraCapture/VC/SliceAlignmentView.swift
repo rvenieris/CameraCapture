@@ -9,29 +9,28 @@ import SwiftUI
 
 struct SliceAlignmentView: View {
     
-    
-    @State var image: UIImage?
     var ciImage: CIImage
+    @State private var image: UIImage?
     
-    // MARK: Rotation Angle
+    // Rotation Angle
     @State private var accumulatedRotationAngle = 0.0
     @State private var ongoingRotationAngle = 0.0
     var currentAngle: Double {
         @Wrapping(0.0..<180) var currentAngle = accumulatedRotationAngle + ongoingRotationAngle
         return currentAngle
     }
-    @State var isRotating = false
+    @State private var isRotating = false
     
-    // MARK: Debug Rotated Image
+    // Debug Rotated Image
     @State private var showRotated = false
     @State private var rotated: UIImage?
     
-    // MARK: Wall from Image Slice
+    // Wall from Image Slice
     @State private var colors: [CIColor] = []
     @State private var wall: UIImage?
-    @State var wallSize: CGSize = .zero
-    @State var redMarker = 0.0
-    @State var blueMarker = 0.0
+    @State private var wallSize: CGSize = .zero
+    @State private var redMarker = 0.0
+    @State private var blueMarker = 0.0
     
     
     @Environment(\.dismiss) private var dismiss
@@ -40,12 +39,9 @@ struct SliceAlignmentView: View {
         VStack {
             Group {
                 if let image {
-                    VStack {
-                        Image(uiImage: image)
-                            .resizable()
-                            .scaledToFit()
-                        
-                    }
+                    Image(uiImage: image)
+                        .resizable()
+                        .scaledToFit()
                 } else {
                     Color.blue
                 }
@@ -81,44 +77,7 @@ struct SliceAlignmentView: View {
                     }
                     .clipped()
             }
-            if let wall {
-                Image(uiImage: wall)
-                    .resizable()
-                    .scaledToFit()
-                    .onGeometryChange(for: CGSize.self, of: \.size, action: { newValue in
-                        wallSize = newValue
-                        if redMarker == 0 {
-                            redMarker = 0.25 * wallSize.width
-                            blueMarker = 0.75 * wallSize.width
-                        }
-                    })
-                    .overlay(alignment: .center) {
-                        FrequencyMarkerView(
-                            wallSize: wallSize,
-                            markerPosition: $blueMarker,
-                            isRotating: isRotating,
-                            color: .blue
-                        ) {
-                            Text("400")
-                            Image(systemName: "arrow.left.and.line.vertical.and.arrow.right")
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-                    .overlay(alignment: .center) {
-                        FrequencyMarkerView(
-                            wallSize: wallSize,
-                            markerPosition: $redMarker,
-                            isRotating: isRotating,
-                            color: .red
-                        ) {
-                            Text("700")
-                            Image(systemName: "arrow.left.and.line.vertical.and.arrow.right")
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-                    .animation(.snappy(duration: 0.1), value: redMarker)
-                    .animation(.snappy(duration: 0.1), value: blueMarker)
-            }
+            wallComponent
         }
         .padding(.horizontal)
         .frame(maxHeight: .infinity)
@@ -149,6 +108,56 @@ struct SliceAlignmentView: View {
                     Text("Cancel")
                 }
             }
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    
+                } label: {
+                    Text("Continue")
+                }
+                .disabled(true)
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private var wallComponent: some View {
+        if let wall {
+            Image(uiImage: wall)
+                .resizable()
+                .scaledToFit()
+                .onGeometryChange(for: CGSize.self, of: \.size, action: { newValue in
+                    wallSize = newValue
+                    if redMarker == 0 {
+                        redMarker = 0.25 * wallSize.width
+                        blueMarker = 0.75 * wallSize.width
+                    }
+                })
+                .overlay(alignment: .center) {
+                    FrequencyMarkerView(
+                        wallSize: wallSize,
+                        markerPosition: $blueMarker,
+                        isRotating: isRotating,
+                        color: .blue
+                    ) {
+                        Text("400")
+                        Image(systemName: "arrow.left.and.line.vertical.and.arrow.right")
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .overlay(alignment: .center) {
+                    FrequencyMarkerView(
+                        wallSize: wallSize,
+                        markerPosition: $redMarker,
+                        isRotating: isRotating,
+                        color: .red
+                    ) {
+                        Text("700")
+                        Image(systemName: "arrow.left.and.line.vertical.and.arrow.right")
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .animation(.snappy(duration: 0.1), value: redMarker)
+                .animation(.snappy(duration: 0.1), value: blueMarker)
         }
     }
     
@@ -169,7 +178,9 @@ struct SliceAlignmentView: View {
             }
     }
     
+    
     // MARK: - Components
+    
     @ViewBuilder
     private var footerControls: some View {
         VStack {
@@ -214,13 +225,12 @@ struct SliceAlignmentView: View {
         .buttonStyle(.borderedProminent)
     }
     
+    
     // MARK: - Actions
     
     private func loadImage() {
-//        let ciImage = CIImage(forResource: "Teste3", withExtension: "DNG")!
         let context = CIContext(options: nil)
         let cgImage = context.createCGImage(ciImage, from: ciImage.extent)!
-//        self.ciImage = ciImage
         self.image = UIImage(cgImage: cgImage).preparingThumbnail(of: CGSize(width: 500, height: 500))
     }
     
@@ -228,7 +238,7 @@ struct SliceAlignmentView: View {
         let angle = await Angle.degrees(accumulatedRotationAngle).radians
         guard !Task.isCancelled else { return }
         
-        let capturedImage = await rotateAndPreserveSize(ciImage, by: angle, originalSize: ciImage.extent.width)
+        let capturedImage = await ciImage.rotateAndPreserveSize(by: angle, originalSize: ciImage.extent.width)
         let context = CIContext(options: nil)
         let cgImage = context.createCGImage(capturedImage, from: capturedImage.extent)!
         guard !Task.isCancelled else { return }
@@ -244,8 +254,13 @@ struct SliceAlignmentView: View {
             if let wall { self.wall = wall }
         }
     }
-    
-    private func rotateAndPreserveSize(_ image: CIImage, by radians: CGFloat, originalSize: CGFloat = 4032) -> CIImage {
+}
+#Preview {
+    SliceAlignmentView(ciImage: CIImage(forResource: "Teste3", withExtension: "DNG")!)
+}
+
+extension CIImage {
+    func rotateAndPreserveSize(by radians: CGFloat, originalSize: CGFloat = 4032) -> CIImage {
         // Calculate the diagonal length to ensure the rotated image fits within the original size
         let diagonal = sqrt(pow(originalSize, 2) + pow(originalSize, 2))
         let scale = originalSize / diagonal
@@ -260,14 +275,12 @@ struct SliceAlignmentView: View {
         let combinedTransform = scaling.concatenating(rotation)
         
         // Apply the transform to the CIImage
-        return image.transformed(by: combinedTransform)
+        return self.transformed(by: combinedTransform)
     }
 }
 
 
-//#Preview {
-//    SliceAlignmentView(/*image: UIImage(ciImage: r!.outputImage!)*/)
-//}
+
 
 struct FrequencyMarkerView<Label: View>: View {
     
