@@ -279,7 +279,7 @@ class ViewController: UIViewController {
         let viewcontroler = UIHostingController(rootView: NavigationStack {
             SliceAlignmentView(ciImage: capturedCIImage)
         })
-        viewcontroler.modalPresentationStyle = .formSheet
+        viewcontroler.modalPresentationStyle = .fullScreen
         self.present(viewcontroler, animated: true)
     }
     
