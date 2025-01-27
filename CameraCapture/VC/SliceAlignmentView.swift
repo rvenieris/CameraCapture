@@ -42,8 +42,10 @@ struct SliceAlignmentView: View {
                     Image(uiImage: image)
                         .resizable()
                         .scaledToFit()
+                    
                 } else {
-                    Color.blue
+                    ProgressView()
+                        .controlSize(.large)
                 }
             }
             .overlay {
@@ -89,7 +91,8 @@ struct SliceAlignmentView: View {
             withAnimation(.easeInOut(duration: 0.1)) {
                 isRotating = true
             }
-            try? await Task.sleep(for: .seconds(1))
+            let cancelled = (try? await Task.sleep(for: .seconds(0.5))) == nil
+            guard !cancelled else { return }
             withAnimation(.easeInOut(duration: 0.4)) {
                 isRotating = false
             }
