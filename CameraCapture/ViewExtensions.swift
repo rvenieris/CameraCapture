@@ -250,10 +250,10 @@ extension Array where Element == AVCaptureDevice.DeviceType {
             .builtInDualCamera      ,
             .builtInDualWideCamera  ,
             .builtInTripleCamera    ,
-            .continuityCamera       ,
-            .builtInLiDARDepthCamera,
-            .builtInTrueDepthCamera ,
-            .external
+//            .continuityCamera       ,
+//            .builtInLiDARDepthCamera,
+//            .builtInTrueDepthCamera ,
+//            .external
         ]
     }
 }
